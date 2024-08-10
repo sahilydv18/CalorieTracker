@@ -52,9 +52,9 @@ android {
 dependencies {
 
     // lottie
-    implementation("com.airbnb.android:lottie:6.5.0")
+    implementation("com.airbnb.android:lottie-compose:6.5.0")
 
-    
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

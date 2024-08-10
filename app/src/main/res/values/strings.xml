@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">Calorie Tracker</string>
+    <string name="welcome">Welcome!</string>
+    <string name="welcome_text">Tell us a bit about yourself</string>
+    <string name="next">Next</string>
+    <string name="name">Name</string>
+    <string name="age">Age (in years)</string>
+    <string name="screen_two_text">Provide your biometric information</string>
+    <string name="weight">Weight (in kg)</string>
+    <string name="height">Height (in cm)</string>
+    <string name="exercise_level">Exercise Level</string>
+    <string name="dropdown_reason">Drop down menu for selecting different exercise levels</string>
+    <string name="previous">Previous</string>
+    <string-array name="exercise_list">
+        <item>Sedentary lifestyle (little or no exercise)</item>
+        <item>Slightly active lifestyle (light exercise/sports 1–2 days/week)</item>
+        <item>Moderately active lifestyle (moderate exercise/sports 2–3 days/week)</item>
+        <item>Very active lifestyle (hard exercise/sports 4–5 days a week)</item>
+        <item>Extra active lifestyle (very hard exercise, physical job or sports 6–7 days/week)</item>
+        <item>Professional Athlete</item>
+    </string-array>
+    <string name="gender">Gender: </string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="goal">"Goal: "</string>
+    <string name="weight_loss">Weight Loss</string>
+    <string name="weight_gain">Weight Gain</string>
+    <string name="third_screen_text">Let\'s set your goals!</string>
+    <string name="finish">Finish</string>
 </resources>
