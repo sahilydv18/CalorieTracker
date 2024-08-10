@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -39,7 +40,8 @@ import com.example.calorietracker.R
 @Composable
 fun ThirdScreen(
     onFinishButtonClicked: () -> Unit = {},
-    onPreviousButtonClicked: () -> Unit = {}
+    onPreviousButtonClicked: () -> Unit = {},
+    onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
 
     // state variable for lottie animation composition
@@ -157,7 +159,7 @@ fun ThirdScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
-        
+
         // buttons for navigating the onboarding screens
         Row(
             modifier = Modifier
@@ -170,7 +172,10 @@ fun ThirdScreen(
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { onFinishButtonClicked() },
+                onClick = {
+                    onFinishButtonClicked()
+                    onboardingViewModel.updateShouldShowOnboardingScreen(false)
+                },
                 enabled = calorie.isNotBlank() && protein.isNotBlank() && carbs.isNotBlank() && fat.isNotBlank()
             ) {
                 Text(text = stringResource(id = R.string.finish))

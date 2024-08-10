@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,7 +69,7 @@ fun SecondScreen(
     // list of different exercise levels
     val exerciseLevels = context.resources.getStringArray(R.array.exercise_list)
 
-    // state variable for expansion of dropdown menu
+    // state variable for expansion of exercise list dropdown menu
     var expanded by rememberSaveable {
         mutableStateOf(false)
     }
@@ -81,9 +79,17 @@ fun SecondScreen(
         mutableStateOf(exerciseLevels[0])
     }
 
-    // state variable for goal
+    // list of different weight goals
+    val goalList = context.resources.getStringArray(R.array.weight_goal_list)
+
+    // state variable for expansion of weight goal dropdown menu
+    var goalExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    // state variable for showing the selected weight goal in the outlined text field
     var selectedGoal by rememberSaveable {
-        mutableStateOf("Weight Loss")
+        mutableStateOf(goalList[1])
     }
 
     Column(
@@ -160,7 +166,7 @@ fun SecondScreen(
                         )
                     }
                 },
-                modifier = Modifier.width(282.dp)
+                modifier = Modifier.width(281.dp)
             )
             DropdownMenu(
                 expanded = expanded,
@@ -179,34 +185,41 @@ fun SecondScreen(
             }
         }
 
-        // radio buttons for choosing weight gain or loose
-        Row(
+        // dropdown menu for selecting weight goal
+        Box(
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text(
-                text = stringResource(id = R.string.goal),
-                modifier = Modifier.align(Alignment.CenterVertically),
-                fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize
+            OutlinedTextField(
+                value = selectedGoal,
+                onValueChange = {},
+                readOnly = true,
+                singleLine = true,
+                label = {
+                    Text(text = stringResource(id = R.string.goal))
+                },
+                trailingIcon = {
+                    IconButton(onClick = { goalExpanded = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = stringResource(id = R.string.dropdown_goal_reason)
+                        )
+                    }
+                }
             )
-            // weight loss
-            Row {
-                RadioButton(selected = selectedGoal == "Weight Loss", onClick = { selectedGoal = "Weight Loss" })
-                Text(
-                    text = stringResource(id = R.string.weight_loss),
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            // weight gain
-            Row {
-                RadioButton(selected = selectedGoal == "Weight Gain", onClick = { selectedGoal = "Weight Gain" })
-                Text(
-                    text = stringResource(id = R.string.weight_gain),
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize
-                )
+            DropdownMenu(
+                expanded = goalExpanded,
+                onDismissRequest = { goalExpanded = false },
+                scrollState = rememberScrollState()
+            ) {
+                goalList.forEach {
+                    DropdownMenuItem(
+                        text = { Text(text = it) },
+                        onClick = {
+                            selectedGoal = it
+                            goalExpanded = false
+                        }
+                    )
+                }
             }
         }
 
