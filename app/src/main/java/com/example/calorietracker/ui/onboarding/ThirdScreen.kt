@@ -3,10 +3,13 @@ package com.example.calorietracker.ui.onboarding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -34,7 +37,10 @@ import com.example.calorietracker.R
 
 // third screen for onboarding process
 @Composable
-fun ThirdScreen() {
+fun ThirdScreen(
+    onFinishButtonClicked: () -> Unit = {},
+    onPreviousButtonClicked: () -> Unit = {}
+) {
 
     // state variable for lottie animation composition
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.third_screen))
@@ -60,7 +66,11 @@ fun ThirdScreen() {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(
+                state = rememberScrollState()
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LottieAnimation(
@@ -146,20 +156,21 @@ fun ThirdScreen() {
             )
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+        
         // buttons for navigating the onboarding screens
         Row(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
-            OutlinedButton(onClick = { /*TODO*/ }) {
+            OutlinedButton(onClick = { onPreviousButtonClicked() }) {
                 Text(text = stringResource(id = R.string.previous))
             }
-            Modifier.weight(1f)
+            Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onFinishButtonClicked() },
                 enabled = calorie.isNotBlank() && protein.isNotBlank() && carbs.isNotBlank() && fat.isNotBlank()
             ) {
                 Text(text = stringResource(id = R.string.finish))

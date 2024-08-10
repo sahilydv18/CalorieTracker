@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -47,7 +48,10 @@ import com.example.calorietracker.R
 
 // second screen for the onboarding process
 @Composable
-fun SecondScreen() {
+fun SecondScreen(
+    onNextButtonClicked: () -> Unit = {},
+    onPreviousButtonClicked: () -> Unit = {}
+) {
 
     // state variable for lottie animation composition
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.second_screen))
@@ -83,7 +87,11 @@ fun SecondScreen() {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(
+                state = rememberScrollState()
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LottieAnimation(
@@ -94,7 +102,7 @@ fun SecondScreen() {
         Text(
             text = stringResource(id = R.string.screen_two_text),
             fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
-            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+            fontSize = MaterialTheme.typography.headlineMedium.fontSize,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -173,7 +181,7 @@ fun SecondScreen() {
 
         // radio buttons for choosing weight gain or loose
         Row(
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier.padding(top = 16.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.goal),
@@ -202,20 +210,21 @@ fun SecondScreen() {
             }
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
         // buttons for navigating the onboarding screens
         Row(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
-            OutlinedButton(onClick = { /*TODO*/ }) {
+            OutlinedButton(onClick = { onPreviousButtonClicked() }) {
                 Text(text = stringResource(id = R.string.previous))
             }
-            Modifier.weight(1f)
+            Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onNextButtonClicked() },
                 enabled = weight.isNotBlank() && height.isNotBlank()
             ) {
                 Text(text = stringResource(id = R.string.next))

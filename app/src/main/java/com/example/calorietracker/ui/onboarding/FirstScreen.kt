@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -37,7 +39,9 @@ import com.example.calorietracker.R
 
 // first screen for the onboarding process
 @Composable
-fun FirstScreen() {
+fun FirstScreen(
+    onNextButtonClicked: () -> Unit = {}
+) {
     // state variable for lottie animation composition
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.first_screen))
 
@@ -57,7 +61,11 @@ fun FirstScreen() {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(
+                state = rememberScrollState()
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         LottieAnimation(
@@ -122,7 +130,7 @@ fun FirstScreen() {
 
             // Radio buttons for selecting gender
             Row(
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.gender),
@@ -157,17 +165,18 @@ fun FirstScreen() {
             }
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
         // Button for navigation in the onboarding screen
         Row(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onNextButtonClicked() },
                 enabled = name.isNotBlank() && age.isNotBlank()
             ) {
                 Text(text = stringResource(id = R.string.next))

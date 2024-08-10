@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -54,6 +56,19 @@ dependencies {
     // lottie
     implementation("com.airbnb.android:lottie-compose:6.5.0")
 
+    // datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // dagger-hilt
+    implementation("com.google.dagger:hilt-android:2.46")
+    kapt("com.google.dagger:hilt-android-compiler:2.46")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // view model
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+
+    // navigation
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
 
     implementation(libs.androidx.core.ktx)

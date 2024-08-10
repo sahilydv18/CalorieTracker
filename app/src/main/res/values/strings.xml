@@ -5,7 +5,7 @@
     <string name="next">Next</string>
     <string name="name">Name</string>
     <string name="age">Age (in years)</string>
-    <string name="screen_two_text">Provide your biometric information</string>
+    <string name="screen_two_text">Enter your biometric information</string>
     <string name="weight">Weight (in kg)</string>
     <string name="height">Height (in cm)</string>
     <string name="exercise_level">Exercise Level</string>

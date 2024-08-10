@@ -7,7 +7,7 @@
       </SelectionState>
       <SelectionState runConfigName="FirstScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-08-10T05:49:35.647460900Z">
+        <DropdownSelection timestamp="2024-08-10T10:06:05.308671900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\raosa\.android\avd\Pixel_8_API_35.avd" />
@@ -18,7 +18,7 @@
       </SelectionState>
       <SelectionState runConfigName="SecondScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-08-10T07:25:04.004399200Z">
+        <DropdownSelection timestamp="2024-08-10T10:04:08.755949500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\raosa\.android\avd\Pixel_8_API_35.avd" />
@@ -29,6 +29,14 @@
       </SelectionState>
       <SelectionState runConfigName="ThirdScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-08-10T10:02:55.695349500Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\raosa\.android\avd\Pixel_8_API_35.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
     </selectionStates>
   </component>
