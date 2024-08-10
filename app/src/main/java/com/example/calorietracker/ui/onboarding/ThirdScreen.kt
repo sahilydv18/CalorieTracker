@@ -71,7 +71,7 @@ fun ThirdScreen() {
         Text(
             text = stringResource(id = R.string.third_screen_text),
             fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
-            fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+            fontSize = MaterialTheme.typography.headlineMedium.fontSize,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -85,7 +85,7 @@ fun ThirdScreen() {
                     calorie = it
                 },
                 label = {
-                    Text(text = "Calorie (in kcal)")
+                    Text(text = stringResource(id = R.string.calorie))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -101,7 +101,7 @@ fun ThirdScreen() {
                     protein = it
                 },
                 label = {
-                    Text(text = "Protein (in g)")
+                    Text(text = stringResource(id = R.string.protein))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -118,7 +118,7 @@ fun ThirdScreen() {
                     carbs = it
                 },
                 label = {
-                    Text(text = "Carbs (in g)")
+                    Text(text = stringResource(id = R.string.carbs))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -135,7 +135,7 @@ fun ThirdScreen() {
                     fat = it
                 },
                 label = {
-                    Text(text = "Fat (in g)")
+                    Text(text = stringResource(id = R.string.fat))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(

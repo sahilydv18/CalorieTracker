@@ -25,6 +25,10 @@
     <string name="goal">"Goal: "</string>
     <string name="weight_loss">Weight Loss</string>
     <string name="weight_gain">Weight Gain</string>
-    <string name="third_screen_text">Let\'s set your goals!</string>
+    <string name="third_screen_text">Let\'s set your nutritional goals!</string>
     <string name="finish">Finish</string>
+    <string name="calorie">Calorie (in kcal)</string>
+    <string name="protein">Protein (in g)</string>
+    <string name="carbs">Carbs (in g)</string>
+    <string name="fat">Fat (in g)</string>
 </resources>
