@@ -111,7 +111,8 @@ fun ThirdScreen(
         mutableStateOf("")
     }
 
-    // updating value of calorie state variable to use the calculate calorie value
+    // updating value of calorie state variable to use the calculated calorie value
+    // using launched effect as we want only updated value to be shown in text field and not an empty string
     LaunchedEffect(age, pal, weight, height, gender, weightGoal) {
         if (age.isNotEmpty() && pal.isNotEmpty() && weight.isNotEmpty() &&
             height.isNotEmpty() && gender.isNotEmpty() && weightGoal.isNotEmpty()
@@ -133,6 +134,8 @@ fun ThirdScreen(
         mutableStateOf("")
     }
 
+    // updating value of protein state variable to use the calculated protein value
+    // using launched effect as we want only updated value to be shown in text field and not an empty string
     LaunchedEffect(weight) {
         if (weight.isNotEmpty()) {
             val calculatedProtein = NutritionalCalculation.calculateProtein(weight.toDoubleOrNull() ?: 0.0)
@@ -145,6 +148,8 @@ fun ThirdScreen(
         mutableStateOf("")
     }
 
+    // updating value of fat state variable to use the calculated fat value
+    // using launched effect as we want only updated value to be shown in text field and not an empty string
     LaunchedEffect(calorie) {
         if (calorie.isNotEmpty()) {
             val calculatedFat = NutritionalCalculation.calculateFat(calorie.toDoubleOrNull() ?: 0.0)
@@ -157,6 +162,8 @@ fun ThirdScreen(
         mutableStateOf("")
     }
 
+    // updating value of carbs state variable to use the calculated carbs value
+    // using launched effect as we want only updated value to be shown in text field and not an empty string
     LaunchedEffect(calorie, protein, fat) {
         if (calorie.isNotEmpty() && protein.isNotEmpty() && fat.isNotEmpty()) {
             val calculatedCarbs = NutritionalCalculation.calculateCarbs(

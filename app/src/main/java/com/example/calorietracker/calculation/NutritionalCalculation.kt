@@ -2,6 +2,7 @@ package com.example.calorietracker.calculation
 
 import kotlin.math.roundToInt
 
+// functions for calculation of nutritional info
 object NutritionalCalculation {
     fun calculateCalories(pal: Double, weight: Double, height: Double, age: Double, gender: String, weightGoal: String): String {
         var requiredCalorie: Double = if (gender == "Male") {
