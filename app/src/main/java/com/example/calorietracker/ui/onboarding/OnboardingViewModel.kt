@@ -15,16 +15,19 @@ class OnboardingViewModel @Inject constructor(
 ): ViewModel() {
 
     // variable for getting value to show onboarding screen or not
-    private val _shouldShowOnboardingScreen = MutableStateFlow(true)
+    private val _shouldShowOnboardingScreen = MutableStateFlow(false)
     val shouldShowOnboardingScreen = _shouldShowOnboardingScreen.asStateFlow()
 
-    init {
-        checkOnboardingStatus()
-    }
+    // NOTE : this is a temporary solution, fix it when you use database to store meals
+    // a list made to control the showing of splash screen, it will contain the value from data store preferences file
+    val conditionForSplashScreen: MutableList<Boolean> = mutableListOf()
 
-    private fun checkOnboardingStatus() {
+    init {
         viewModelScope.launch {
             _shouldShowOnboardingScreen.value = preferencesRepo.shouldShowOnboardingScreen()
+            // NOTE : this is a temporary solution, fix it when you use database to store meals
+            // adding the value from data store preferences about whether to show onboarding screen or not in the list to use it to control the splash screen
+            conditionForSplashScreen.add(_shouldShowOnboardingScreen.value)
         }
     }
 

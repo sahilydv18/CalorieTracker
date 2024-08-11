@@ -29,7 +29,8 @@ fun OnboardingScreen(
         composable(Screens.SECOND_SCREEN.name) {
             SecondScreen(
                 onPreviousButtonClicked = {
-                    navController.navigate(Screens.FIRST_SCREEN.name)
+                    navController.popBackStack()
+                    //navController.navigate(Screens.FIRST_SCREEN.name)
                 },
                 onNextButtonClicked = {
                     navController.navigate(Screens.THIRD_SCREEN.name)
@@ -39,9 +40,11 @@ fun OnboardingScreen(
         composable(Screens.THIRD_SCREEN.name) {
             ThirdScreen(
                 onPreviousButtonClicked = {
-                    navController.navigate(Screens.SECOND_SCREEN.name)
+                    navController.popBackStack()
+                    //navController.navigate(Screens.SECOND_SCREEN.name)
                 },
                 onFinishButtonClicked = {
+                    navController.popBackStack(route = Screens.FIRST_SCREEN.name, inclusive = true)
                     navController.navigate(Screens.HOME_SCREEN.name)
                 }
             )
