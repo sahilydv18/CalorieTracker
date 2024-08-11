@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -40,7 +41,8 @@ import com.example.calorietracker.R
 // first screen for the onboarding process
 @Composable
 fun FirstScreen(
-    onNextButtonClicked: () -> Unit = {}
+    onNextButtonClicked: () -> Unit = {},
+    onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
     // state variable for lottie animation composition
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.first_screen))
@@ -176,7 +178,12 @@ fun FirstScreen(
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { onNextButtonClicked() },
+                onClick = {
+                    onNextButtonClicked()
+                    onboardingViewModel.updateName(name)
+                    onboardingViewModel.updateAge(age.toInt())
+                    onboardingViewModel.updateGender(gender = selectedGender)
+                },
                 enabled = name.isNotBlank() && age.isNotBlank()
             ) {
                 Text(text = stringResource(id = R.string.next))

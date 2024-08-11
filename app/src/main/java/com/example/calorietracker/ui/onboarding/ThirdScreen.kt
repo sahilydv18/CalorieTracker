@@ -16,8 +16,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,6 +37,9 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.calorietracker.R
+import com.example.calorietracker.calculation.NutritionalCalculation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // third screen for onboarding process
 @Composable
@@ -44,6 +49,60 @@ fun ThirdScreen(
     onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
 
+    // state variables for calculation of nutritional values
+    val coroutineScope = rememberCoroutineScope()
+
+    var age by rememberSaveable {
+        mutableStateOf("")
+    }
+    var gender by rememberSaveable {
+        mutableStateOf("")
+    }
+    var weight by rememberSaveable {
+        mutableStateOf("")
+    }
+    var height by rememberSaveable {
+        mutableStateOf("")
+    }
+    var pal by rememberSaveable {
+        mutableStateOf("")
+    }
+    var weightGoal by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    // updating value in the state variables for nutritional values calculation
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            age = onboardingViewModel.getAge()
+        }
+    }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            gender = onboardingViewModel.getGender()
+        }
+    }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            weight = onboardingViewModel.getWeight()
+        }
+    }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            height = onboardingViewModel.getHeight()
+        }
+    }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            pal = onboardingViewModel.getPAL()
+        }
+    }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            weightGoal = onboardingViewModel.getWeightGoal()
+        }
+    }
+
     // state variable for lottie animation composition
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.third_screen))
 
@@ -52,9 +111,45 @@ fun ThirdScreen(
         mutableStateOf("")
     }
 
+    // updating value of calorie state variable to use the calculate calorie value
+    LaunchedEffect(age, pal, weight, height, gender, weightGoal) {
+        if (age.isNotEmpty() && pal.isNotEmpty() && weight.isNotEmpty() &&
+            height.isNotEmpty() && gender.isNotEmpty() && weightGoal.isNotEmpty()
+        ) {
+            val calculatedCalorie = NutritionalCalculation.calculateCalories(
+                pal.toDoubleOrNull() ?: 0.0,
+                weight.toDoubleOrNull() ?: 0.0,
+                height.toDoubleOrNull() ?: 0.0,
+                age.toDoubleOrNull() ?: 0.0,
+                gender,
+                weightGoal
+            )
+            calorie = calculatedCalorie
+        }
+    }
+
     // state variable for protein
     var protein by rememberSaveable {
         mutableStateOf("")
+    }
+
+    LaunchedEffect(weight) {
+        if (weight.isNotEmpty()) {
+            val calculatedProtein = NutritionalCalculation.calculateProtein(weight.toDoubleOrNull() ?: 0.0)
+            protein = calculatedProtein
+        }
+    }
+
+    // state variable for fat
+    var fat by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(calorie) {
+        if (calorie.isNotEmpty()) {
+            val calculatedFat = NutritionalCalculation.calculateFat(calorie.toDoubleOrNull() ?: 0.0)
+            fat = calculatedFat
+        }
     }
 
     // state variable for carbs
@@ -62,9 +157,15 @@ fun ThirdScreen(
         mutableStateOf("")
     }
 
-    // state variable for fat
-    var fat by rememberSaveable {
-        mutableStateOf("")
+    LaunchedEffect(calorie, protein, fat) {
+        if (calorie.isNotEmpty() && protein.isNotEmpty() && fat.isNotEmpty()) {
+            val calculatedCarbs = NutritionalCalculation.calculateCarbs(
+                calorie.toDoubleOrNull() ?: 0.0,
+                protein.toDoubleOrNull() ?: 0.0,
+                fat.toDoubleOrNull() ?: 0.0
+            )
+            carbs = calculatedCarbs
+        }
     }
 
     Column(
@@ -175,6 +276,10 @@ fun ThirdScreen(
                 onClick = {
                     onFinishButtonClicked()
                     onboardingViewModel.updateShouldShowOnboardingScreen(false)
+                    onboardingViewModel.updateCalorie(calorie.toInt())
+                    onboardingViewModel.updateProtein(protein.toInt())
+                    onboardingViewModel.updateCarbs(carbs.toInt())
+                    onboardingViewModel.updateFat(fat.toInt())
                 },
                 enabled = calorie.isNotBlank() && protein.isNotBlank() && carbs.isNotBlank() && fat.isNotBlank()
             ) {

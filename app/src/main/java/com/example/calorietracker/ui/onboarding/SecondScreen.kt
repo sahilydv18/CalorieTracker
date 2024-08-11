@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -48,7 +49,8 @@ import com.example.calorietracker.R
 @Composable
 fun SecondScreen(
     onNextButtonClicked: () -> Unit = {},
-    onPreviousButtonClicked: () -> Unit = {}
+    onPreviousButtonClicked: () -> Unit = {},
+    onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
 
     // state variable for lottie animation composition
@@ -237,13 +239,31 @@ fun SecondScreen(
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { onNextButtonClicked() },
+                onClick = {
+                    onNextButtonClicked()
+                    onboardingViewModel.updateWeight(weight.toDouble())
+                    onboardingViewModel.updateHeight(height.toDouble())
+                    onboardingViewModel.updatePAL(getPAL(selectedLevel))
+                    onboardingViewModel.updateWeightGoal(selectedGoal)
+                },
                 enabled = weight.isNotBlank() && height.isNotBlank()
             ) {
                 Text(text = stringResource(id = R.string.next))
             }
         }
     }
+}
+
+private fun getPAL(exerciseLevel: String): Double {
+    val pal = when(exerciseLevel) {
+        "Sedentary lifestyle (little or no exercise)" -> 1.2
+        "Slightly active lifestyle (light exercise/sports 1–2 days/week)" -> 1.4
+        "Moderately active lifestyle (moderate exercise/sports 2–3 days/week)" -> 1.6
+        "Very active lifestyle (hard exercise/sports 4–5 days a week)" -> 1.75
+        "Extra active lifestyle (very hard exercise, physical job or sports 6–7 days/week)" -> 2.0
+        else -> 2.3
+    }
+    return pal
 }
 
 @Preview(showSystemUi = true)

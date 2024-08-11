@@ -3,11 +3,16 @@ package com.example.calorietracker.calculation
 import kotlin.math.roundToInt
 
 object NutritionalCalculation {
-    fun calculateCalories(pal: Double, weight: Double, height: Double, age: Double, male: Boolean): String {
-        val requiredCalorie: Double = if (male) {
+    fun calculateCalories(pal: Double, weight: Double, height: Double, age: Double, gender: String, weightGoal: String): String {
+        var requiredCalorie: Double = if (gender == "Male") {
             ((weight * 10.0) + (height * 6.25) - (age * 5) + 5) * pal
         } else {
             ((weight * 10.0) + (height * 6.25) - (age * 5) - 161) * pal
+        }
+        requiredCalorie = when(weightGoal) {
+            "Weight Loss" -> requiredCalorie - 500
+            "Maintain Weight" -> requiredCalorie
+            else -> requiredCalorie + 500
         }
         return requiredCalorie.roundToInt().toString()
     }
