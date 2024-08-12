@@ -117,7 +117,7 @@ fun FirstScreen(
                     Text(text = stringResource(id = R.string.age))
                 },
                 singleLine = true,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = 16.dp),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number

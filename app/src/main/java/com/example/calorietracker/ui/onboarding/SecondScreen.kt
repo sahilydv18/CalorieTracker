@@ -91,7 +91,7 @@ fun SecondScreen(
 
     // state variable for showing the selected weight goal in the outlined text field
     var selectedGoal by rememberSaveable {
-        mutableStateOf(goalList[1])
+        mutableStateOf(goalList[2])
     }
 
     Column(
@@ -147,7 +147,7 @@ fun SecondScreen(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
                 ),
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
         }
 

@@ -25,7 +25,9 @@
     <string name="goal">"Goal"</string>
     <string-array name="weight_goal_list">
         <item>Weight Loss</item>
+        <item>Mild Weight Loss</item>
         <item>Maintain Weight</item>
+        <item>Mild Weight Gain</item>
         <item>Weight Gain</item>
     </string-array>
     <string name="third_screen_text">Let\'s set your nutritional goals!</string>

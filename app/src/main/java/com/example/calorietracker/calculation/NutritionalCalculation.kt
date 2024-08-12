@@ -12,7 +12,9 @@ object NutritionalCalculation {
         }
         requiredCalorie = when(weightGoal) {
             "Weight Loss" -> requiredCalorie - 500
+            "Mild Weight Loss" -> requiredCalorie - 250
             "Maintain Weight" -> requiredCalorie
+            "Mild Weight Gain" -> requiredCalorie + 250
             else -> requiredCalorie + 500
         }
         return requiredCalorie.roundToInt().toString()

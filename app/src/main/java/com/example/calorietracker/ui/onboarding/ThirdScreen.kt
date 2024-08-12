@@ -228,7 +228,7 @@ fun ThirdScreen(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
                 ),
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
 
             // carbs text field
@@ -245,7 +245,7 @@ fun ThirdScreen(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
                 ),
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
 
             // fat text field
@@ -262,7 +262,7 @@ fun ThirdScreen(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
                 ),
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
         }
 
