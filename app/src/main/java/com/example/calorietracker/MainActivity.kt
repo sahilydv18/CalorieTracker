@@ -7,16 +7,25 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calorietracker.ui.HomeScreen
+import com.example.calorietracker.ui.HomeScreenFAB
+import com.example.calorietracker.ui.HomeScreenTopAppBar
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.onboarding.screen.OnboardingScreen
 import com.example.calorietracker.ui.theme.CalorieTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -37,15 +46,33 @@ class MainActivity : ComponentActivity() {
                 onboardingViewModel.conditionForSplashScreen.size < 1
             }
 
+            var name by rememberSaveable {
+                mutableStateOf("")
+            }
+            LaunchedEffect(Unit) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    name = onboardingViewModel.getName()
+                }
+            }
+
+
             CalorieTrackerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        HomeScreenTopAppBar(name)
+                    },
+                    floatingActionButton = {
+                        HomeScreenFAB()
+                    }
+                ) { innerPadding ->
                     if (shouldShowOnboarding) {
                         OnboardingScreen(
                             modifier = Modifier.padding(innerPadding)
                         )
                     } else {
                         HomeScreen(
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(innerPadding),
                         )
                     }
                 }

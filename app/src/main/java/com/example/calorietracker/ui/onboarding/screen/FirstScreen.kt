@@ -111,8 +111,10 @@ fun FirstScreen(
             // age text field
             OutlinedTextField(
                 value = age,
-                onValueChange = {
-                    age = it
+                onValueChange = { value ->
+                    age = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                        it.isDigit()
+                    }
                 },
                 label = {
                     Text(text = stringResource(id = R.string.age))
@@ -122,13 +124,7 @@ fun FirstScreen(
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
-                ),
-//                isError = try {
-//                    age.toInt()
-//                    false
-//                } catch (e: NumberFormatException) {
-//                    true
-//                }
+                )
             )
 
             // Radio buttons for selecting gender

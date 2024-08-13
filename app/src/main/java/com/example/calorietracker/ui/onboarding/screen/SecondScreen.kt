@@ -121,8 +121,12 @@ fun SecondScreen(
             // weight text field
             OutlinedTextField(
                 value = weight,
-                onValueChange = {
-                    weight = it
+                onValueChange = { value ->      // making sure that the user can only enter valid integer numbers or decimal numbers up to 2 places and not any whitespaces
+                    weight = value.filter {
+                        it.isDigit() || it == '.'
+                    }.replace(
+                        Regex("(\\.[0-9]{2}).*"), "$1"
+                    )
                 },
                 label = {
                     Text(text = stringResource(id = R.string.weight))
@@ -137,8 +141,12 @@ fun SecondScreen(
             // height text field
             OutlinedTextField(
                 value = height,
-                onValueChange = {
-                    height = it
+                onValueChange = { value ->
+                    height = value.filter {     // making sure that the user can only enter valid integer numbers or decimal numbers up to 2 places and not any whitespaces
+                        it.isDigit() || it == '.'
+                    }.replace(
+                        Regex("(\\.[0-9]{2}).*"), "$1"
+                    )
                 },
                 label = {
                     Text(text = stringResource(id = R.string.height))

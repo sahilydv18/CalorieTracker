@@ -37,4 +37,17 @@
     <string name="carbs">Carbs (in g)</string>
     <string name="fat">Fat (in g)</string>
     <string name="dropdown_goal_reason">Dropdown menu for selecting weight goals</string>
+    <string name="add_meal">Click here to add a meal</string>
+    <string name="meal_name">Meal name</string>
+    <string name="add_ingredient">Add Ingredient</string>
+    <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="calorie_ingredient">Calorie:</string>
+    <string name="carbs_ingredient">Carbs:</string>
+    <string name="protein_ingredient">Protein:</string>
+    <string name="fat_ingredient">Fat:</string>
+    <string name="calorie_unit">kcal</string>
+    <string name="gram_unit">g</string>
+    <string name="cancel">Cancel</string>
 </resources>

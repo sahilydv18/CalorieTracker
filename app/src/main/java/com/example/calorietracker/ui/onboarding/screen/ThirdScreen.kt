@@ -202,8 +202,10 @@ fun ThirdScreen(
             // calorie text field
             OutlinedTextField(
                 value = calorie,
-                onValueChange = {
-                    calorie = it
+                onValueChange = { value ->
+                    calorie = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                        it.isDigit()
+                    }
                 },
                 label = {
                     Text(text = stringResource(id = R.string.calorie))
@@ -218,8 +220,10 @@ fun ThirdScreen(
             // protein text field
             OutlinedTextField(
                 value = protein,
-                onValueChange = {
-                    protein = it
+                onValueChange = { value ->
+                    protein = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                        it.isDigit()
+                    }
                 },
                 label = {
                     Text(text = stringResource(id = R.string.protein))
@@ -235,8 +239,10 @@ fun ThirdScreen(
             // carbs text field
             OutlinedTextField(
                 value = carbs,
-                onValueChange = {
-                    carbs = it
+                onValueChange = { value ->
+                    carbs = value.filter {      // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                        it.isDigit()
+                    }
                 },
                 label = {
                     Text(text = stringResource(id = R.string.carbs))
@@ -252,8 +258,10 @@ fun ThirdScreen(
             // fat text field
             OutlinedTextField(
                 value = fat,
-                onValueChange = {
-                    fat = it
+                onValueChange = { value ->
+                    fat = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                        it.isDigit()
+                    }
                 },
                 label = {
                     Text(text = stringResource(id = R.string.fat))

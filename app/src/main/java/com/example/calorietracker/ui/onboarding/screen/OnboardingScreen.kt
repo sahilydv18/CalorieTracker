@@ -51,7 +51,9 @@ fun OnboardingScreen(
             )
         }
         composable(Screens.HOME_SCREEN.name) {
-            HomeScreen(modifier)
+            HomeScreen(
+                modifier
+            )
         }
     }
 }
