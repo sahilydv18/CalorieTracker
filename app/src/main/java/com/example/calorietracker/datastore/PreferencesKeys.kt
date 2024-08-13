@@ -1,4 +1,4 @@
-package com.example.calorietracker.data
+package com.example.calorietracker.datastore
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey

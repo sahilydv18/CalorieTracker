@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calorietracker.ui.HomeScreen
-import com.example.calorietracker.ui.onboarding.OnboardingScreen
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
+import com.example.calorietracker.ui.onboarding.screen.OnboardingScreen
 import com.example.calorietracker.ui.theme.CalorieTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -1,8 +1,9 @@
-package com.example.calorietracker.data
+package com.example.calorietracker.datastore.repo
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.example.calorietracker.datastore.PreferencesKeys
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 

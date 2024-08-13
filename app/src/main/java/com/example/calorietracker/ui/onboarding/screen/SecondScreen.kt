@@ -1,4 +1,4 @@
-package com.example.calorietracker.ui.onboarding
+package com.example.calorietracker.ui.onboarding.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +44,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.calorietracker.R
+import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 
 // second screen for the onboarding process
 @Composable

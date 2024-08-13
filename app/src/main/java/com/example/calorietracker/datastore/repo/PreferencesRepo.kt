@@ -1,4 +1,4 @@
-package com.example.calorietracker.data
+package com.example.calorietracker.datastore.repo
 
 // all functions to get and set values in data store preferences file
 interface PreferencesRepo {

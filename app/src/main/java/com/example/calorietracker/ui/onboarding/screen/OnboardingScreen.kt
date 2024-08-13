@@ -1,4 +1,4 @@
-package com.example.calorietracker.ui.onboarding
+package com.example.calorietracker.ui.onboarding.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calorietracker.ui.HomeScreen
+import com.example.calorietracker.ui.onboarding.Screens
 
 // implementing onboarding screen using navigation
 @Composable

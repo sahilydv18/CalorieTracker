@@ -2,7 +2,7 @@ package com.example.calorietracker.ui.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.calorietracker.data.PreferencesRepo
+import com.example.calorietracker.datastore.repo.PreferencesRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
