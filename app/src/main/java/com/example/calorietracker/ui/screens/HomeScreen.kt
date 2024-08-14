@@ -1,5 +1,6 @@
-package com.example.calorietracker.ui
+package com.example.calorietracker.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.calorietracker.ui.HomeScreenFAB
+import com.example.calorietracker.ui.HomeScreenTopAppBar
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +39,8 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onboardingViewModel: OnboardingViewModel = hiltViewModel(),
-    databaseViewModel: DatabaseViewModel = hiltViewModel()
+    databaseViewModel: DatabaseViewModel = hiltViewModel(),
+    onAddButtonClicked: () -> Unit
 ) {
 
     // val mealUiState = databaseViewModel.mealUiState.collectAsState()
@@ -78,7 +82,12 @@ fun HomeScreen(
             HomeScreenTopAppBar(name = name)
         },
         floatingActionButton = {
-            HomeScreenFAB()
+            HomeScreenFAB(
+                onAddButtonClicked = {
+                    Log.d("AddMeal", "Button Clicked")
+                    onAddButtonClicked()
+                }
+            )
         }
     ) { innerPadding ->
         Column(

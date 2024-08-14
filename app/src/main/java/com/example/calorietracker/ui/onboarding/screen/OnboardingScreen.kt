@@ -2,19 +2,19 @@ package com.example.calorietracker.ui.onboarding.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.calorietracker.ui.HomeScreen
 import com.example.calorietracker.ui.onboarding.Screens
+import com.example.calorietracker.ui.screens.HomeScreen
+import com.example.calorietracker.ui.screens.MealAddingScreen
 
 // implementing onboarding screen using navigation
 @Composable
 fun OnboardingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
-    val navController = rememberNavController()
-
     NavHost(
         navController = navController,
         startDestination = Screens.FIRST_SCREEN.name,
@@ -52,7 +52,20 @@ fun OnboardingScreen(
         }
         composable(Screens.HOME_SCREEN.name) {
             HomeScreen(
-                modifier
+                modifier,
+                onAddButtonClicked = {
+                    navController.navigate(Screens.MEAL_ADD_SCREEN.name)
+                }
+            )
+        }
+        composable(Screens.MEAL_ADD_SCREEN.name) {
+            MealAddingScreen(
+                onCancelButtonClicked = {
+                    navController.popBackStack()
+                },
+                onBackButtonClicked = {
+                    navController.popBackStack()
+                }
             )
         }
     }

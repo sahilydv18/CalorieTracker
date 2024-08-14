@@ -50,4 +50,13 @@
     <string name="calorie_unit">kcal</string>
     <string name="gram_unit">g</string>
     <string name="cancel">Cancel</string>
+    <string name="total_calorie">Total Calorie:</string>
+    <string name="total_carbs">Total Carbs:</string>
+    <string name="total_protein">Total Protein:</string>
+    <string name="total_fat">Total Fat:</string>
+    <string name="ingredient_name">Ingredient Name</string>
+    <string name="ingredient_info">Add information about the ingredient</string>
+    <string name="ingredient_quantity">Quantity</string>
+    <string name="back">Navigate back</string>
+    <string name="meal">Add Meal</string>
 </resources>

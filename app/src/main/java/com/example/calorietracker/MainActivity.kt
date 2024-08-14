@@ -12,9 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.calorietracker.ui.HomeScreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.onboarding.screen.OnboardingScreen
+import com.example.calorietracker.ui.screens.AppScreen
 import com.example.calorietracker.ui.theme.CalorieTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,6 +33,8 @@ class MainActivity : ComponentActivity() {
             val onboardingViewModel: OnboardingViewModel = hiltViewModel()
             val shouldShowOnboarding by onboardingViewModel.shouldShowOnboardingScreen.collectAsState()
 
+            val navController: NavHostController = rememberNavController()
+
             // NOTE : this is a temporary solution, fix it when you use database to store meals
             // checking if the list contains 1 element before closing the splash screen to make sure that the data is loaded for the data store preferences file
             splashScreen.setKeepOnScreenCondition {
@@ -43,11 +47,13 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     if (shouldShowOnboarding) {
                         OnboardingScreen(
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(innerPadding),
+                            navController = navController
                         )
                     } else {
-                        HomeScreen(
-                            modifier = Modifier.padding(innerPadding),
+                        AppScreen(
+                            navController = navController,
+                            innerPadding = innerPadding
                         )
                     }
                 }
