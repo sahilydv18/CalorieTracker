@@ -1,6 +1,5 @@
 package com.example.calorietracker.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +32,6 @@ import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -73,118 +72,128 @@ fun HomeScreen(
         mutableFloatStateOf(100F)
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        LaunchedEffect(Unit) {
-            coroutineScope.launch(Dispatchers.IO) {
-                name = onboardingViewModel.getName()
-            }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            HomeScreenTopAppBar(name = name)
+        },
+        floatingActionButton = {
+            HomeScreenFAB()
         }
-        LaunchedEffect(Unit) {
-            coroutineScope.launch(Dispatchers.IO) {
-                calorie = onboardingViewModel.getCalorie()
-            }
-        }
-        LaunchedEffect(Unit) {
-            coroutineScope.launch(Dispatchers.IO) {
-                protein = onboardingViewModel.getProtein()
-            }
-        }
-        LaunchedEffect(Unit) {
-            coroutineScope.launch(Dispatchers.IO) {
-                carbs = onboardingViewModel.getCarbs()
-            }
-        }
-        LaunchedEffect(Unit) {
-            coroutineScope.launch(Dispatchers.IO) {
-                fat = onboardingViewModel.getFat()
-            }
-        }
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+    ) { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                Box(
-                    Modifier.align(Alignment.CenterVertically)
-                ) {
-                    NutritionalProgressIndicators(
-                        completedValue = completedCalorie,
-                        totalValue = calorie,
-                        color = Color(red = 3, green = 252, blue = 40),
-                        modifier = Modifier
-                            .size(180.dp)
-                            .align(Alignment.Center)
-                    )
-                    NutritionalProgressIndicators(
-                        completedValue = completedProtein,
-                        totalValue = protein,
-                        color = Color(254, 177, 24),
-                        modifier = Modifier
-                            .size(150.dp)
-                            .align(Alignment.Center)
-                    )
-                    NutritionalProgressIndicators(
-                        completedValue = completedCarbs,
-                        totalValue = carbs,
-                        color = Color(241, 255, 24),
-                        modifier = Modifier
-                            .size(120.dp)
-                            .align(Alignment.Center)
-                    )
-                    NutritionalProgressIndicators(
-                        completedValue = completedFat,
-                        totalValue = fat,
-                        color = Color(252, 84, 75),
-                        modifier = Modifier
-                            .size(90.dp)
-                            .align(Alignment.Center)
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    NutritionalInfo(
-                        title = "Calorie",
-                        completedValue = completedCalorie,
-                        totalValue = calorie,
-                        unit = "kcal",
-                        Color(red = 3, green = 252, blue = 40)
-                    )
-                    NutritionalInfo(
-                        title = "Protein",
-                        completedValue = completedProtein,
-                        totalValue = protein,
-                        unit = "g",
-                        Color(254, 177, 24)
-                    )
-                    NutritionalInfo(
-                        title = "Carbs",
-                        completedValue = completedCarbs,
-                        totalValue = carbs,
-                        unit = "g",
-                        Color(241, 255, 24)
-                    )
-                    NutritionalInfo(
-                        title = "Fat",
-                        completedValue = completedFat,
-                        totalValue = fat,
-                        unit = "g",
-                        Color(252, 84, 75)
-                    )
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    name = onboardingViewModel.getName()
                 }
             }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    calorie = onboardingViewModel.getCalorie()
+                }
+            }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    protein = onboardingViewModel.getProtein()
+                }
+            }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    carbs = onboardingViewModel.getCarbs()
+                }
+            }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    fat = onboardingViewModel.getFat()
+                }
+            }
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Box(
+                        Modifier.align(Alignment.CenterVertically)
+                    ) {
+                        NutritionalProgressIndicators(
+                            completedValue = completedCalorie,
+                            totalValue = calorie,
+                            color = Color(red = 3, green = 252, blue = 40),
+                            modifier = Modifier
+                                .size(180.dp)
+                                .align(Alignment.Center)
+                        )
+                        NutritionalProgressIndicators(
+                            completedValue = completedProtein,
+                            totalValue = protein,
+                            color = Color(254, 177, 24),
+                            modifier = Modifier
+                                .size(150.dp)
+                                .align(Alignment.Center)
+                        )
+                        NutritionalProgressIndicators(
+                            completedValue = completedCarbs,
+                            totalValue = carbs,
+                            color = Color(241, 255, 24),
+                            modifier = Modifier
+                                .size(120.dp)
+                                .align(Alignment.Center)
+                        )
+                        NutritionalProgressIndicators(
+                            completedValue = completedFat,
+                            totalValue = fat,
+                            color = Color(252, 84, 75),
+                            modifier = Modifier
+                                .size(90.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        NutritionalInfo(
+                            title = "Calorie",
+                            completedValue = completedCalorie,
+                            totalValue = calorie,
+                            unit = "kcal",
+                            Color(red = 3, green = 252, blue = 40)
+                        )
+                        NutritionalInfo(
+                            title = "Protein",
+                            completedValue = completedProtein,
+                            totalValue = protein,
+                            unit = "g",
+                            Color(254, 177, 24)
+                        )
+                        NutritionalInfo(
+                            title = "Carbs",
+                            completedValue = completedCarbs,
+                            totalValue = carbs,
+                            unit = "g",
+                            Color(241, 255, 24)
+                        )
+                        NutritionalInfo(
+                            title = "Fat",
+                            completedValue = completedFat,
+                            totalValue = fat,
+                            unit = "g",
+                            Color(252, 84, 75)
+                        )
+                    }
+                }
 
 
 //        Text(text = "Welcome $name to home screen")
@@ -194,6 +203,7 @@ fun HomeScreen(
 //                Text(text = it.mealName)
 //            }
 //        }
+            }
         }
     }
 

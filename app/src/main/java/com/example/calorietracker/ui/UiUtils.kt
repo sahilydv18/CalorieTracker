@@ -25,20 +25,22 @@ fun HomeScreenTopAppBar(name: String) {
         in 12..17 -> "Good Afternoon"
         else -> "Good Evening"
     }
-    TopAppBar(title = {
-        Text(
-            text = "$greeting, $name",
-            fontSize = MaterialTheme.typography.displaySmall.fontSize,
-            fontFamily = FontFamily(Font(R.font.dancingscript_bold))
-        )
-    })
+    TopAppBar(
+        title = {
+            Text(
+                text = "$greeting, $name",
+                fontSize = MaterialTheme.typography.displaySmall.fontSize,
+                fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
+            )
+        }
+    )
 }
 
 @Composable
 fun HomeScreenFAB() {
     FloatingActionButton(onClick = { /*TODO*/ }) {
         Icon(
-            imageVector = Icons.Filled.Add ,
+            imageVector = Icons.Filled.Add,
             contentDescription = stringResource(id = R.string.add_meal)
         )
     }
