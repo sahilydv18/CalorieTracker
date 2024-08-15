@@ -12,9 +12,9 @@ interface MealRepo {
 
     suspend fun getIngredient(ingredientID: Int): Ingredient?
 
-    suspend fun insertMeal(meal: Meal)
+    suspend fun insertMeal(meal: Meal): Long
 
-    suspend fun insertIngredient(ingredient: Ingredient)
+    suspend fun insertIngredient(ingredient: Ingredient): Long
 
     suspend fun insertIngredientsForMeal(mealIngredients: MealIngredients)
 

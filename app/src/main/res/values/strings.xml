@@ -59,4 +59,5 @@
     <string name="ingredient_quantity">Quantity</string>
     <string name="back">Navigate back</string>
     <string name="meal">Add Meal</string>
+    <string name="empty_ingredient_list">Add some ingredients to this meal!</string>
 </resources>

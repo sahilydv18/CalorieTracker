@@ -1,6 +1,5 @@
 package com.example.calorietracker.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,10 +7,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,21 +26,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.sp
+import com.example.calorietracker.R
 import com.example.calorietracker.ui.HomeScreenFAB
-import com.example.calorietracker.ui.HomeScreenTopAppBar
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onboardingViewModel: OnboardingViewModel = hiltViewModel(),
-    databaseViewModel: DatabaseViewModel = hiltViewModel(),
+    onboardingViewModel: OnboardingViewModel,
+    databaseViewModel: DatabaseViewModel,
     onAddButtonClicked: () -> Unit
 ) {
 
@@ -78,13 +82,9 @@ fun HomeScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            HomeScreenTopAppBar(name = name)
-        },
         floatingActionButton = {
             HomeScreenFAB(
                 onAddButtonClicked = {
-                    Log.d("AddMeal", "Button Clicked")
                     onAddButtonClicked()
                 }
             )
@@ -122,6 +122,10 @@ fun HomeScreen(
                 }
             }
 
+            GreetingText(name = name)
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -261,4 +265,22 @@ private fun NutritionalInfo(
             color = color
         )
     }
+}
+
+// greeting text for the user
+@Composable
+private fun GreetingText(name: String) {
+    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val greeting = when (currentHour) {
+        in 0..11 -> "Good Morning"
+        in 12..17 -> "Good Afternoon"
+        else -> "Good Evening"
+    }
+    Text(
+        text = "$greeting, $name",
+        fontSize = MaterialTheme.typography.displaySmall.fontSize,
+        fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
+        lineHeight = 40.sp,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    )
 }

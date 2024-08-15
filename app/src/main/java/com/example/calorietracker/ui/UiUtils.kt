@@ -22,27 +22,6 @@ import androidx.compose.ui.text.font.FontFamily
 import com.example.calorietracker.R
 import java.util.Calendar
 
-// top app bar for home screen
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeScreenTopAppBar(name: String) {
-    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    val greeting = when (currentHour) {
-        in 0..11 -> "Good Morning"
-        in 12..17 -> "Good Afternoon"
-        else -> "Good Evening"
-    }
-    TopAppBar(
-        title = {
-            Text(
-                text = "$greeting, $name",
-                fontSize = MaterialTheme.typography.displaySmall.fontSize,
-                fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
-            )
-        }
-    )
-}
-
 // FAB for home screen
 @Composable
 fun HomeScreenFAB(

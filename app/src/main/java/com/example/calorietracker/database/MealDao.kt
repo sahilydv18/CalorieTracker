@@ -52,4 +52,8 @@ interface MealDao {
     // function for deleting all ingredients associated with a meal
     @Query("DELETE FROM MealIngredients WHERE mealId = :mealId")
     suspend fun deleteIngredientsForMeal(mealId: Int)
+
+    // function to get last inserted row
+    @Query("SELECT last_insert_rowid()")
+    suspend fun getLastInsertedRowId(): Long
 }

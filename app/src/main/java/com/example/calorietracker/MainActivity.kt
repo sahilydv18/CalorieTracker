@@ -18,6 +18,7 @@ import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.onboarding.screen.OnboardingScreen
 import com.example.calorietracker.ui.screens.AppScreen
 import com.example.calorietracker.ui.theme.CalorieTrackerTheme
+import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +33,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val onboardingViewModel: OnboardingViewModel = hiltViewModel()
             val shouldShowOnboarding by onboardingViewModel.shouldShowOnboardingScreen.collectAsState()
+
+            val databaseViewModel: DatabaseViewModel = hiltViewModel()
 
             val navController: NavHostController = rememberNavController()
 
@@ -48,12 +51,16 @@ class MainActivity : ComponentActivity() {
                     if (shouldShowOnboarding) {
                         OnboardingScreen(
                             modifier = Modifier.padding(innerPadding),
-                            navController = navController
+                            navController = navController,
+                            onboardingViewModel = onboardingViewModel,
+                            databaseViewModel = databaseViewModel
                         )
                     } else {
                         AppScreen(
                             navController = navController,
-                            innerPadding = innerPadding
+                            innerPadding = innerPadding,
+                            databaseViewModel = databaseViewModel,
+                            onboardingViewModel = onboardingViewModel
                         )
                     }
                 }

@@ -1,12 +1,12 @@
 package com.example.calorietracker.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.database.Meal
+import com.example.calorietracker.database.MealIngredients
 import com.example.calorietracker.database.repo.MealRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,28 +19,6 @@ import javax.inject.Inject
 class DatabaseViewModel @Inject constructor(
     private val mealRepo: MealRepo
 ): ViewModel() {
-
-    init {
-        Log.d("InsertMeal", "inserting meals")
-        insertMeal(
-            Meal(
-                1,
-                "meal1"
-            )
-        )
-        insertMeal(
-            Meal(
-                2,
-                "meal2"
-            )
-        )
-        insertMeal(
-            Meal(
-                3,
-                "meal3"
-            )
-        )
-    }
 
     // ui state to store list of meals and showing it on UI
     private val _mealUiState: StateFlow<MealUiState> = mealRepo.getAllMeals().map {
@@ -56,9 +34,18 @@ class DatabaseViewModel @Inject constructor(
     val mealUiState = _mealUiState
 
     // function for inserting meals
-    fun insertMeal(meal: Meal) {
-        viewModelScope.launch(Dispatchers.IO) {
-            mealRepo.insertMeal(meal)
+    suspend fun insertMeal(meal: Meal): Long {
+        return mealRepo.insertMeal(meal)
+    }
+
+    // function for inserting ingredients
+    suspend fun insertIngredient(ingredientItem: IngredientItem): Long {
+        return mealRepo.insertIngredient(ingredientItem.toIngredient())
+    }
+
+    fun insertIngredientsForMeal(mealIngredients: MealIngredients) {
+        viewModelScope.launch {
+            mealRepo.insertIngredientsForMeal(mealIngredients)
         }
     }
 }
@@ -66,4 +53,37 @@ class DatabaseViewModel @Inject constructor(
 // data class for storing list of meals
 data class MealUiState(
     val meals: List<Meal> = emptyList()
+)
+
+// data class for adding ingredients, created so that we can use the auto generate functionality of primary key
+data class IngredientItem(
+    val ingredientID: Int = 0,
+    val name: String,
+    val quantity: String,
+    val calories: String,
+    val protein: String,
+    val fat: String,
+    val carbs: String
+)
+
+// extension function for converting IngredientItem to Ingredient
+fun IngredientItem.toIngredient() = Ingredient(
+    ingredientID = ingredientID,
+    name = name,
+    quantity = quantity,
+    calories = calories,
+    protein = protein,
+    fat = fat,
+    carbs = carbs
+)
+
+// extension function for converting Ingredient to IngredientItem
+fun Ingredient.toIngredientItem() = IngredientItem(
+    ingredientID = ingredientID,
+    name = name,
+    quantity = quantity,
+    calories = calories,
+    protein = protein,
+    fat = fat,
+    carbs = carbs
 )

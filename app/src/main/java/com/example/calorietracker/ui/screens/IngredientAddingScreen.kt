@@ -25,54 +25,72 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.calorietracker.R
+import com.example.calorietracker.database.Ingredient
+import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
+import com.example.calorietracker.ui.viewmodel.IngredientItem
 
 @Composable
 fun IngredientAddingScreen(
-    onCancelButtonClicked: () -> Unit = {}
+    dismissDialog: () -> Unit,
+    onIngredientAdded: (IngredientItem) -> Unit,
+    ingredient: Ingredient,
+    databaseViewModel: DatabaseViewModel
 ) {
     // state variable for ingredient name
     var ingredientName by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(ingredient.name)
     }
 
     // state variable for ingredient quantity
     var ingredientQuantity by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(ingredient.quantity)
     }
 
     // state variable for ingredient calorie
     var ingredientCalorie by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(ingredient.calories)
     }
 
     // state variable for ingredient protein
     var ingredientProtein by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(ingredient.protein)
     }
 
     // state variable for ingredient carbs
     var ingredientCarbs by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(ingredient.carbs)
     }
 
     // state variable for ingredient fat
     var ingredientFat by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(ingredient.fat)
     }
 
     AlertDialog(
         onDismissRequest = {},
         confirmButton = {
             Row {
-                TextButton(onClick = { onCancelButtonClicked() }) {
+                // cancel button
+                TextButton(onClick = { dismissDialog() }) {
                     Text(text = stringResource(id = R.string.cancel))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
+                // add button
                 TextButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        val ingredient = IngredientItem(
+                            name = ingredientName,
+                            calories = ingredientCalorie,
+                            quantity = ingredientQuantity,
+                            protein = ingredientProtein,
+                            carbs = ingredientCarbs,
+                            fat = ingredientFat
+                        )
+                        onIngredientAdded(ingredient)
+                        dismissDialog()
+                    },
                     enabled = ingredientName.isNotBlank() && ingredientQuantity.isNotBlank() && ingredientCalorie.isNotBlank() && ingredientProtein.isNotBlank() && ingredientCarbs.isNotBlank() && ingredientFat.isNotBlank()
                 ) {
                     Text(text = stringResource(id = R.string.add))
@@ -85,14 +103,14 @@ fun IngredientAddingScreen(
         icon = {
             if (isSystemInDarkTheme()) {
                 Image(
-                    painter = painterResource(id = R.drawable.breakfast),
+                    painter = painterResource(id = R.drawable.ingredient),
                     contentDescription = stringResource(id = R.string.add_ingredient),
                     modifier = Modifier.size(28.dp),
                     colorFilter = ColorFilter.tint(Color.White)
                 )
             } else {
                 Image(
-                    painter = painterResource(id = R.drawable.breakfast),
+                    painter = painterResource(id = R.drawable.ingredient),
                     contentDescription = stringResource(id = R.string.add_ingredient),
                     modifier = Modifier.size(28.dp)
                 )
@@ -105,8 +123,10 @@ fun IngredientAddingScreen(
                 // text field for ingredient name
                 OutlinedTextField(
                     value = ingredientName,
-                    onValueChange = {
-                        ingredientName = it
+                    onValueChange = { value ->
+                        ingredientName = value.filter {
+                            it.isLetter()
+                        }
                     },
                     label = {
                         Text(text = stringResource(id = R.string.ingredient_name))
@@ -123,7 +143,7 @@ fun IngredientAddingScreen(
                     value = ingredientQuantity,
                     onValueChange = { value ->
                         ingredientQuantity = value.filter {
-                            it.isDigit() || it == 'g' || it == 'o' || it == 'z' || it == ' ' || it == 'k'
+                            it.isDigit() || it == 'g' || it == 'o' || it == 'z' || it == ' ' || it == 'k' || it == '.' || it == 'm' || it == 'l'
                         }
                     },
                     label = {
@@ -213,10 +233,4 @@ fun IngredientAddingScreen(
             }
         }
     )
-}
-
-@Preview
-@Composable
-fun IngredientAddingScreenPreview() {
-    IngredientAddingScreen()
 }
