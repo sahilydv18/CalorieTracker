@@ -1,5 +1,6 @@
 package com.example.calorietracker.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calorietracker.database.Ingredient
@@ -7,6 +8,8 @@ import com.example.calorietracker.database.Meal
 import com.example.calorietracker.database.MealIngredients
 import com.example.calorietracker.database.repo.MealRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -43,9 +46,29 @@ class DatabaseViewModel @Inject constructor(
         return mealRepo.insertIngredient(ingredientItem.toIngredient())
     }
 
-    fun insertIngredientsForMeal(mealIngredients: MealIngredients) {
-        viewModelScope.launch {
-            mealRepo.insertIngredientsForMeal(mealIngredients)
+    fun insertIngredientsForMeal(mealName: String, mealIngredients: List<IngredientItem>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            coroutineScope {
+                // Insert Meal and get ID
+                val mealId = insertMeal(Meal(mealName = mealName))
+                Log.d("MealId",mealId.toString())
+
+                // Insert Ingredients and getIDs (sequentially)
+                val ingredientIds = mealIngredients.map { ingredientItem ->
+                    insertIngredient(ingredientItem)
+                }
+                Log.d("IngredientId", ingredientIds.toString())
+
+                // Insert MealIngredients
+                ingredientIds.forEach { ingredientId ->
+                    mealRepo.insertIngredientsForMeal(
+                        MealIngredients(
+                            mealID = mealId.toInt(),
+                            ingredientID = ingredientId.toInt()
+                        )
+                    )
+                }
+            }
         }
     }
 }

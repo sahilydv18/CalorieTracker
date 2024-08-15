@@ -31,11 +31,11 @@ interface MealDao {
 
     // function for inserting meal
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMeal(meal: Meal)
+    suspend fun insertMeal(meal: Meal): Long
 
     // function for inserting ingredients
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertIngredient(ingredient: Ingredient)
+    suspend fun insertIngredient(ingredient: Ingredient): Long
 
     // function for inserting ingredients for meal
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -53,7 +53,7 @@ interface MealDao {
     @Query("DELETE FROM MealIngredients WHERE mealId = :mealId")
     suspend fun deleteIngredientsForMeal(mealId: Int)
 
-    // function to get last inserted row
-    @Query("SELECT last_insert_rowid()")
-    suspend fun getLastInsertedRowId(): Long
+//    // function to get last inserted row
+//    @Query("SELECT last_insert_rowid()")
+//    suspend fun getLastInsertedRowId(): Long
 }

@@ -23,13 +23,11 @@ class MealRepoImpl @Inject constructor(
     }
 
     override suspend fun insertMeal(meal: Meal): Long {
-        mealDao.insertMeal(meal)
-        return mealDao.getLastInsertedRowId()
+        return mealDao.insertMeal(meal)
     }
 
     override suspend fun insertIngredient(ingredient: Ingredient): Long {
-        mealDao.insertIngredient(ingredient)
-        return mealDao.getLastInsertedRowId()
+        return mealDao.insertIngredient(ingredient)
     }
 
     override suspend fun insertIngredientsForMeal(mealIngredients: MealIngredients) {

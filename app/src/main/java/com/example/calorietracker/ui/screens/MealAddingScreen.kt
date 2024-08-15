@@ -46,17 +46,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
-import com.example.calorietracker.database.Meal
-import com.example.calorietracker.database.MealIngredients
 import com.example.calorietracker.ui.MealAddingScreenTopAppBar
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import com.example.calorietracker.ui.viewmodel.IngredientItem
 import com.example.calorietracker.ui.viewmodel.toIngredient
 import com.example.calorietracker.ui.viewmodel.toIngredientItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 // screen for adding a meal
 @Composable
@@ -250,36 +244,7 @@ fun MealAddingScreen(
                 // add button
                 Button(
                     onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-
-                            /*TODO("FIX THIS")*/
-
-                            // Insert Meal and get ID (asynchronously)
-                            val mealIdDeferred = async { databaseViewModel.insertMeal(Meal(mealName = mealName)) }
-
-                            // Insert Ingredients and get IDs (asynchronously)
-                            val ingredientIdDeferreds = mealIngredients.map { ingredientItem ->
-                                async { databaseViewModel.insertIngredient(ingredientItem) }
-                            }
-
-                            // Wait for Meal ID
-                            val mealId = mealIdDeferred.await()
-                            Log.d("MealID", mealId.toString())
-
-                            // Wait for IngredientIDs
-                            val ingredientIds = ingredientIdDeferreds.map { it.await() }
-                            Log.d("IngredientsID", ingredientIds.toString())
-
-                            // Insert MealIngredients
-                            ingredientIds.forEach { ingredientId ->
-                                databaseViewModel.insertIngredientsForMeal(
-                                    MealIngredients(
-                                        mealID = mealId.toInt(),
-                                        ingredientID = ingredientId.toInt()
-                                    )
-                                )
-                            }
-                        }
+                        databaseViewModel.insertIngredientsForMeal(mealName, mealIngredients)
                     },
                     enabled = mealIngredients.isNotEmpty() && mealName.isNotBlank()
                 ) {
