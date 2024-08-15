@@ -72,7 +72,10 @@ fun OnboardingScreen(
                 onBackButtonClicked = {
                     navController.popBackStack()
                 },
-                databaseViewModel = databaseViewModel
+                databaseViewModel = databaseViewModel,
+                onAddButtonClicked = {
+                    navController.popBackStack()
+                }
             )
         }
     }

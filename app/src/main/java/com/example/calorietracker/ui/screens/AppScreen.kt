@@ -37,7 +37,10 @@ fun AppScreen(
                 onBackButtonClicked = {
                     navController.popBackStack()
                 },
-                databaseViewModel = databaseViewModel
+                databaseViewModel = databaseViewModel,
+                onAddButtonClicked = {
+                    navController.popBackStack()
+                }
             )
         }
     }

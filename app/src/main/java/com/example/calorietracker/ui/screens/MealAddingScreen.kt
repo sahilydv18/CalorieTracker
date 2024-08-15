@@ -46,6 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
+import com.example.calorietracker.database.Meal
 import com.example.calorietracker.ui.MealAddingScreenTopAppBar
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import com.example.calorietracker.ui.viewmodel.IngredientItem
@@ -57,17 +58,13 @@ import com.example.calorietracker.ui.viewmodel.toIngredientItem
 fun MealAddingScreen(
     onCancelButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    databaseViewModel: DatabaseViewModel
+    databaseViewModel: DatabaseViewModel,
+    onAddButtonClicked: () -> Unit
 ) {
 
     // list for showing ingredients that the user adds
     val mealIngredients = remember {
         mutableStateListOf<IngredientItem>()
-    }
-
-    // counter for ingredient IDs
-    var nextIngredientId by remember {
-        mutableStateOf(1)
     }
 
     // state variable for showing ingredient adding dialog
@@ -100,17 +97,20 @@ fun MealAddingScreen(
         mutableStateOf("0")
     }
 
-    // ingredient to add
-    var ingredientToAdd = remember {
-        IngredientItem(
-            name = "",
-            quantity = "",
-            calories = "",
-            protein = "",
-            fat = "",
-            carbs = ""
-        ).toIngredient()
+    // state variable for ingredient to add so that I can use it to prepopulate text field while editing the element
+    var ingredientToAdd by remember {
+        mutableStateOf(
+            IngredientItem(
+                name = "",
+                quantity = "",
+                calories = "",
+                protein = "",
+                fat = "",
+                carbs = ""
+            ).toIngredient()
+        )
     }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -215,11 +215,15 @@ fun MealAddingScreen(
                             onEditButtonClicked = { ingredient ->
                                 showDialog = true
                                 ingredientToAdd = ingredient
-                                Log.d("IngredientToAdd", ingredientToAdd.toString())
-                                /*TODO("Implement the edit functionality so that the ingredient dialog have information about the ingredient we are editing")*/
                             },
                             onDeleteButtonClicked = { ingredient ->
                                 mealIngredients.remove(ingredient.toIngredientItem())
+
+                                // updating the nutritional values for meal when ingredient is removed
+                                totalCalorie = (totalCalorie.toInt() - ingredient.calories.toInt()).toString()
+                                totalProtein = (totalProtein.toInt() - ingredient.protein.toInt()).toString()
+                                totalCarbs = (totalCarbs.toInt() - ingredient.carbs.toInt()).toString()
+                                totalFat = (totalFat.toInt() - ingredient.fat.toInt()).toString()
                             }
                         )
                     }
@@ -244,7 +248,17 @@ fun MealAddingScreen(
                 // add button
                 Button(
                     onClick = {
-                        databaseViewModel.insertIngredientsForMeal(mealName, mealIngredients)
+                        databaseViewModel.insertIngredientsForMeal(
+                            meal = Meal(
+                                mealName = mealName,
+                                totalCalorie = totalCalorie,
+                                totalProtein = totalProtein,
+                                totalCarbs = totalCarbs,
+                                totalFat = totalFat
+                            ),
+                            mealIngredients = mealIngredients
+                        )
+                        onAddButtonClicked()
                     },
                     enabled = mealIngredients.isNotEmpty() && mealName.isNotBlank()
                 ) {
@@ -266,19 +280,43 @@ fun MealAddingScreen(
     }
 
     if (showDialog) {
+        Log.d("Dialog", ingredientToAdd.toString())
         IngredientAddingScreen(
             dismissDialog = {
                 showDialog = false
+
+                // resetting the ingredient value to empty string after an element has been added, edited or editing is canceled so that the text field don't prepopulate when user adds
+                // a new ingredient
+                ingredientToAdd = IngredientItem(
+                    name = "",
+                    quantity = "",
+                    calories = "",
+                    protein = "",
+                    fat = "",
+                    carbs = ""
+                ).toIngredient()
             },
             onIngredientAdded = { newIngredient ->
-                mealIngredients.add(newIngredient)
+                if (mealIngredients.contains(ingredientToAdd.toIngredientItem())) {     // checking if the list already contains the ingredient
+                    mealIngredients.remove(ingredientToAdd.toIngredientItem())          // removing the old ingredient
+
+                    // updating the nutritional values for meal when ingredient is updated, subtracting the calories of previous ingredient
+                    totalCalorie = (totalCalorie.toInt() - ingredientToAdd.calories.toInt()).toString()
+                    totalProtein = (totalProtein.toInt() - ingredientToAdd.protein.toInt()).toString()
+                    totalCarbs = (totalCarbs.toInt() - ingredientToAdd.carbs.toInt()).toString()
+                    totalFat = (totalFat.toInt() - ingredientToAdd.fat.toInt()).toString()
+
+                    mealIngredients.add(newIngredient)                                  // adding the new ingredient
+                } else {
+                    mealIngredients.add(newIngredient)                                  // directly adding the new ingredient if the list doesn't contain the ingredient
+                }
+                // updating the nutritional values for meal when ingredient is added
                 totalCalorie = (totalCalorie.toInt() + newIngredient.calories.toInt()).toString()
                 totalProtein = (totalProtein.toInt() + newIngredient.protein.toInt()).toString()
                 totalCarbs = (totalCarbs.toInt() + newIngredient.carbs.toInt()).toString()
                 totalFat = (totalFat.toInt() + newIngredient.fat.toInt()).toString()
             },
-            ingredient = ingredientToAdd,
-            databaseViewModel = databaseViewModel
+            ingredient = ingredientToAdd
         )
     }
 }
@@ -397,33 +435,3 @@ private fun NutritionalInfo(@StringRes title: Int, value: String, @StringRes uni
         )
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun IngredientInfoPreview() {
-//    IngredientInfo(title = "Calorie", value = "200", unit = "kcal")
-//}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun IngredientCardPreview() {
-//    IngredientCard(ingredient = Ingredient(
-//        ingredientID = 1,
-//        name = "Milk",
-//        quantity = "2.5 oz",
-//        calories = "220",
-//        protein = "32",
-//        carbs = "40",
-//        fat = "12"
-//    ))
-//}
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun MealAddScreenPreview() {
-//    MealAddingScreen(
-//        onCancelButtonClicked = {},
-//        onBackButtonClicked = {},
-//        databaseViewModel = hiltViewModel<DatabaseViewModel>()
-//    )
-//}

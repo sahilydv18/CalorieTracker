@@ -1,6 +1,5 @@
 package com.example.calorietracker.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calorietracker.database.Ingredient
@@ -46,18 +45,16 @@ class DatabaseViewModel @Inject constructor(
         return mealRepo.insertIngredient(ingredientItem.toIngredient())
     }
 
-    fun insertIngredientsForMeal(mealName: String, mealIngredients: List<IngredientItem>) {
+    fun insertIngredientsForMeal(meal: Meal, mealIngredients: List<IngredientItem>) {
         viewModelScope.launch(Dispatchers.IO) {
             coroutineScope {
                 // Insert Meal and get ID
-                val mealId = insertMeal(Meal(mealName = mealName))
-                Log.d("MealId",mealId.toString())
+                val mealId = insertMeal(meal)
 
                 // Insert Ingredients and getIDs (sequentially)
                 val ingredientIds = mealIngredients.map { ingredientItem ->
                     insertIngredient(ingredientItem)
                 }
-                Log.d("IngredientId", ingredientIds.toString())
 
                 // Insert MealIngredients
                 ingredientIds.forEach { ingredientId ->

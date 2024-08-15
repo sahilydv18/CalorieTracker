@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
         Ingredient::class,
         MealIngredients::class
     ],
-    version = 1
+    version = 2
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract fun mealDao(): MealDao
