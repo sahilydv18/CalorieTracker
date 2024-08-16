@@ -11,5 +11,6 @@ data class Meal(
     val totalCalorie: String,
     val totalProtein: String,
     val totalCarbs: String,
-    val totalFat: String
+    val totalFat: String,
+    val isMealCompleted: Boolean = false
 )

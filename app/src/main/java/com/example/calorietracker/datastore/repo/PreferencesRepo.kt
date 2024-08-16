@@ -37,4 +37,16 @@ interface PreferencesRepo {
 
     suspend fun shouldShowOnboardingScreen(): Boolean
     suspend fun updateShouldShowOnboardingScreen(shouldShowOnboardingScreen: Boolean)
+
+    suspend fun getCompletedCalorie(): String
+    suspend fun updateCompletedCalorie(completedCalorie: Int)
+
+    suspend fun getCompletedProtein(): String
+    suspend fun updateCompletedProtein(completedProtein: Int)
+
+    suspend fun getCompletedCarbs(): String
+    suspend fun updateCompletedCarbs(completedCarbs: Int)
+
+    suspend fun getCompletedFat(): String
+    suspend fun updateCompletedFat(completedFat: Int)
 }

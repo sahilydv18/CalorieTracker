@@ -53,7 +53,7 @@ interface MealDao {
     @Query("DELETE FROM MealIngredients WHERE mealId = :mealId")
     suspend fun deleteIngredientsForMeal(mealId: Int)
 
-//    // function to get last inserted row
-//    @Query("SELECT last_insert_rowid()")
-//    suspend fun getLastInsertedRowId(): Long
+    // function for updating isMealCompleted
+    @Query("UPDATE Meal SET isMealCompleted = :isCompleted WHERE mealID = :mealId")
+    suspend fun updateMealCompletedStatus(mealId: Int, isCompleted: Boolean)
 }

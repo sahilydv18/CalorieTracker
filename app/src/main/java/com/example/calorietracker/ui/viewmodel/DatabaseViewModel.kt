@@ -9,6 +9,7 @@ import com.example.calorietracker.database.repo.MealRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -23,7 +24,7 @@ class DatabaseViewModel @Inject constructor(
 ): ViewModel() {
 
     // ui state to store list of meals and showing it on UI
-    private var _mealUiState: StateFlow<MealUiState> = mealRepo.getAllMeals().map {
+    private val _mealUiState: StateFlow<MealUiState> = mealRepo.getAllMeals().map {
         MealUiState(
             meals = it
         )
@@ -35,6 +36,11 @@ class DatabaseViewModel @Inject constructor(
 
     val mealUiState = _mealUiState
 
+    // function for getting ingredients for a meal
+    fun getIngredientsForMeal(mealId: Int): Flow<List<Ingredient>> {
+        return mealRepo.getIngredientsForMeal(mealId)
+    }
+
     // function for inserting meals
     private suspend fun insertMeal(meal: Meal): Long {
         return mealRepo.insertMeal(meal)
@@ -43,6 +49,12 @@ class DatabaseViewModel @Inject constructor(
     // function for inserting ingredients
     private suspend fun insertIngredient(ingredientItem: IngredientItem): Long {
         return mealRepo.insertIngredient(ingredientItem.toIngredient())
+    }
+
+    fun updateMealCompletedStatus(mealId: Int, isCompleted: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mealRepo.updateMealCompletedStatus(mealId, isCompleted)
+        }
     }
 
     fun insertIngredientsForMeal(meal: Meal, mealIngredients: List<IngredientItem>) {

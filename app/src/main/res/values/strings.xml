@@ -62,6 +62,8 @@
     <string name="empty_ingredient_list">Add some ingredients to this meal!</string>
     <string name="quantity_type">Quantity type</string>
     <string name="expand_meal">Click here to get more information about the meal</string>
+    <string name="close_expanded_meal">Click here to close the expanded meal</string>
+    <string name="bullet_point">\u2022</string>
     <string-array name="quantity_type_list">
         <item>No.</item>
         <item>g</item>

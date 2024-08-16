@@ -129,4 +129,44 @@ class PreferencesRepoImpl @Inject constructor(
             it[PreferencesKeys.SHOW_ONBOARDING_SCREEN] = shouldShowOnboardingScreen
         }
     }
+
+    override suspend fun getCompletedCalorie(): String {
+        return dataStore.data.first()[PreferencesKeys.COMPLETED_CALORIE].toString()
+    }
+
+    override suspend fun updateCompletedCalorie(completedCalorie: Int) {
+        dataStore.edit {
+            it[PreferencesKeys.COMPLETED_CALORIE] = completedCalorie
+        }
+    }
+
+    override suspend fun getCompletedProtein(): String {
+        return dataStore.data.first()[PreferencesKeys.COMPLETED_PROTEIN].toString()
+    }
+
+    override suspend fun updateCompletedProtein(completedProtein: Int) {
+        dataStore.edit {
+            it[PreferencesKeys.COMPLETED_PROTEIN] = completedProtein
+        }
+    }
+
+    override suspend fun getCompletedCarbs(): String {
+        return dataStore.data.first()[PreferencesKeys.COMPLETED_CARBS].toString()
+    }
+
+    override suspend fun updateCompletedCarbs(completedCarbs: Int) {
+        dataStore.edit {
+            it[PreferencesKeys.COMPLETED_CARBS] = completedCarbs
+        }
+    }
+
+    override suspend fun getCompletedFat(): String {
+        return dataStore.data.first()[PreferencesKeys.COMPLETED_FAT].toString()
+    }
+
+    override suspend fun updateCompletedFat(completedFat: Int) {
+        dataStore.edit {
+            it[PreferencesKeys.COMPLETED_FAT] = completedFat
+        }
+    }
 }

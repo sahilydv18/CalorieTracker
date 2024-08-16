@@ -23,4 +23,6 @@ interface MealRepo {
     suspend fun deleteIngredient(ingredient: Ingredient)
 
     suspend fun deleteIngredientsForMeal(mealId: Int)
+
+    suspend fun updateMealCompletedStatus(mealId: Int, isCompleted: Boolean)
 }

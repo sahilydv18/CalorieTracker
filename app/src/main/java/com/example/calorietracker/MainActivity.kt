@@ -38,9 +38,14 @@ class MainActivity : ComponentActivity() {
 
             val navController: NavHostController = rememberNavController()
 
-            // checking if the meal list is populated before removing splash screen
+            // NOTE : this is a temporary solution, fix it when you use database to store meals
+            // checking if the list contains 1 element before closing the splash screen to make sure that the data is loaded for the data store preferences file
+            /*
+                using this approach again because at the first start of app there is no meals in the database coz user haven't added them yet
+                and previously we just checked for meals and due to no meals present in the database the splash screen will be shown forever
+            */
             splashScreen.setKeepOnScreenCondition {
-                databaseViewModel.mealUiState.value.meals.isEmpty()
+                onboardingViewModel.conditionForSplashScreen.size < 1 && databaseViewModel.mealUiState.value.meals.isEmpty()
             }
 
             CalorieTrackerTheme {

@@ -20,5 +20,9 @@ class PreferencesKeys {
         val CARBS = intPreferencesKey("carbs_intake")
         val FAT = intPreferencesKey("fat_intake")
         val SHOW_ONBOARDING_SCREEN = booleanPreferencesKey("should_show_onboarding_screen")
+        val COMPLETED_CALORIE = intPreferencesKey("completed_calorie")
+        val COMPLETED_PROTEIN = intPreferencesKey("completed_protein")
+        val COMPLETED_CARBS = intPreferencesKey("completed_carbs")
+        val COMPLETED_FAT = intPreferencesKey("completed_fat")
     }
 }

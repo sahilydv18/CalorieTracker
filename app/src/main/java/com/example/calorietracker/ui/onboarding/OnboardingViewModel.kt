@@ -6,6 +6,7 @@ import com.example.calorietracker.datastore.repo.PreferencesRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,9 +21,48 @@ class OnboardingViewModel @Inject constructor(
     private val _shouldShowOnboardingScreen = MutableStateFlow(false)
     val shouldShowOnboardingScreen = _shouldShowOnboardingScreen.asStateFlow()
 
+    // NOTE : this is a temporary solution, fix it when you use database to store meals
+    // a list made to control the showing of splash screen, it will contain the value from data store preferences file
+    val conditionForSplashScreen: MutableList<Boolean> = mutableListOf()
+
+    // variable for getting the completed calorie value from data store
+    private val _completedCalorie = MutableStateFlow(0F)
+    val completedCalorie: StateFlow<Float> = _completedCalorie.asStateFlow()
+
+    // variable for getting the completed protein value from data store
+    private val _completedProtein = MutableStateFlow(0F)
+    val completedProtein: StateFlow<Float> = _completedProtein.asStateFlow()
+
+    // variable for getting the completed carbs value from data store
+    private val _completedCarbs = MutableStateFlow(0F)
+    val completedCarbs: StateFlow<Float> = _completedCarbs.asStateFlow()
+
+    // variable for getting the completed fat value from data store
+    private val _completedFat = MutableStateFlow(0F)
+    val completedFat: StateFlow<Float> = _completedFat.asStateFlow()
+
     init {
         viewModelScope.launch {
             _shouldShowOnboardingScreen.value = preferencesRepo.shouldShowOnboardingScreen()
+            // NOTE : this is a temporary solution, fix it when you use database to store meals
+            // adding the value from data store preferences about whether to show onboarding screen or not in the list to use it to control the splash screen
+            conditionForSplashScreen.add(_shouldShowOnboardingScreen.value)
+        }
+
+        viewModelScope.launch {
+            _completedCalorie.value = preferencesRepo.getCompletedCalorie().toFloatOrNull() ?: 0F
+        }
+
+        viewModelScope.launch {
+            _completedProtein.value = preferencesRepo.getCompletedProtein().toFloatOrNull() ?: 0F
+        }
+
+        viewModelScope.launch {
+            _completedCarbs.value = preferencesRepo.getCompletedCarbs().toFloatOrNull() ?: 0F
+        }
+
+        viewModelScope.launch {
+            _completedFat.value = preferencesRepo.getCompletedFat().toFloatOrNull() ?: 0F
         }
     }
 
@@ -172,6 +212,58 @@ class OnboardingViewModel @Inject constructor(
     fun updateFat(fat: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             preferencesRepo.updateFat(fat)
+        }
+    }
+
+    // functions to get and update completed calories
+    suspend fun getCompletedCalorie(): String {
+        return withContext(Dispatchers.IO) {
+            preferencesRepo.getCompletedCalorie()
+        }
+    }
+
+    fun updateCompletedCalorie(completedCalorie: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            preferencesRepo.updateCompletedCalorie(completedCalorie)
+        }
+    }
+
+    // functions to get and update completed protein
+    suspend fun getCompletedProtein(): String {
+        return withContext(Dispatchers.IO) {
+            preferencesRepo.getCompletedProtein()
+        }
+    }
+
+    fun updateCompletedProtein(completedProtein: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            preferencesRepo.updateCompletedCalorie(completedProtein)
+        }
+    }
+
+    // functions to get and update completed carbs
+    suspend fun getCompletedCarbs(): String {
+        return withContext(Dispatchers.IO) {
+            preferencesRepo.getCompletedCarbs()
+        }
+    }
+
+    fun updateCompletedCarbs(completedCarbs: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            preferencesRepo.updateCompletedCalorie(completedCarbs)
+        }
+    }
+
+    // functions to get and update completed fat
+    suspend fun getCompletedFat(): String {
+        return withContext(Dispatchers.IO) {
+            preferencesRepo.getCompletedFat()
+        }
+    }
+
+    fun updateCompletedFat(completedFat: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            preferencesRepo.updateCompletedCalorie(completedFat)
         }
     }
 }

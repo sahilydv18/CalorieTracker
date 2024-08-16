@@ -1,7 +1,9 @@
 package com.example.calorietracker.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -34,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -52,6 +54,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calorietracker.R
+import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.database.Meal
 import com.example.calorietracker.ui.HomeScreenFAB
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
@@ -88,6 +91,7 @@ fun HomeScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
+    /*TODO("Update the getting of these 5 values like the completedCalorie ones")*/
     var name by rememberSaveable {
         mutableStateOf("")
     }
@@ -104,18 +108,12 @@ fun HomeScreen(
         mutableStateOf("")
     }
 
-    var completedCalorie by rememberSaveable {
-        mutableFloatStateOf(2500F)
-    }
-    var completedProtein by rememberSaveable {
-        mutableFloatStateOf(80F)
-    }
-    var completedCarbs by rememberSaveable {
-        mutableFloatStateOf(120F)
-    }
-    var completedFat by rememberSaveable {
-        mutableFloatStateOf(100F)
-    }
+    val completedCalorie by onboardingViewModel.completedCalorie.collectAsState()
+    val completedProtein by onboardingViewModel.completedProtein.collectAsState()
+    val completedCarbs by onboardingViewModel.completedCarbs.collectAsState()
+    val completedFat by onboardingViewModel.completedFat.collectAsState()
+
+    Log.d("completedCalorieFetchedValue", completedCalorie.toString())
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -190,7 +188,7 @@ fun HomeScreen(
                         NutritionalProgressIndicators(
                             completedValue = completedCalorie,
                             totalValue = calorie,
-                            color = Color(3,252,40),
+                            color = Color(3, 252, 40),
                             modifier = Modifier
                                 .size(180.dp)
                                 .align(Alignment.Center)
@@ -230,7 +228,7 @@ fun HomeScreen(
                             completedValue = completedCalorie,
                             totalValue = calorie,
                             unit = "kcal",
-                            Color(3,252,40)
+                            Color(3, 252, 40)
                         )
                         NutritionalInfo(
                             title = "Protein",
@@ -267,8 +265,30 @@ fun HomeScreen(
                 color = if (isSystemInDarkTheme()) primaryDark else primaryLight
             )
             LazyColumn {
-                items(mealUiState.value.meals) {
-                    MealCard(meal = it)
+                items(mealUiState.value.meals) { meal ->
+                    val ingredients by databaseViewModel.getIngredientsForMeal(meal.mealID)
+                        .collectAsState(emptyList())
+                    MealCard(
+                        meal = meal,
+                        ingredients = ingredients,
+                        onMealCompleted = { completedMeal ->
+                            databaseViewModel.updateMealCompletedStatus(completedMeal.mealID, true)
+                            /*TODO("FIX THIS")*/
+                            //Log.d("CompletedCalories", (completedCalorie.toInt() + completedMeal.totalCalorie.toInt()).toString())
+//                            onboardingViewModel.updateCompletedCalorie((completedCalorie.toInt() + completedMeal.totalCalorie.toInt()))
+//                            onboardingViewModel.updateCompletedProtein((completedProtein.toInt() + completedMeal.totalProtein.toInt()))
+//                            onboardingViewModel.updateCompletedCarbs((completedCarbs.toInt() + completedMeal.totalCarbs.toInt()))
+//                            onboardingViewModel.updateCompletedFat((completedFat.toInt() + completedMeal.totalFat.toInt()))
+                        },
+                        onMealRemovedFromCompleted = { removedMeal ->
+                            //Log.d("CompletedCalories", completedCalorie.toString())
+                            databaseViewModel.updateMealCompletedStatus(removedMeal.mealID, false)
+//                            onboardingViewModel.updateCompletedCalorie((completedCalorie.toInt() - removedMeal.totalCalorie.toInt()))
+//                            onboardingViewModel.updateCompletedProtein((completedProtein.toInt() - removedMeal.totalProtein.toInt()))
+//                            onboardingViewModel.updateCompletedCarbs((completedCarbs.toInt() - removedMeal.totalCarbs.toInt()))
+//                            onboardingViewModel.updateCompletedFat((completedFat.toInt() - removedMeal.totalFat.toInt()))
+                        }
+                    )
                 }
             }
         }
@@ -286,9 +306,9 @@ private fun NutritionalProgressIndicators(
     CircularProgressIndicator(
         progress = {
             if (totalValue.isNullOrEmpty()) {
-                (completedValue.toFloat() / 1F)
+                (completedValue / 1F)
             } else {
-                (completedValue.toFloat() / totalValue.toFloat())
+                (completedValue / totalValue.toFloat())
             }
         },
         color = color,
@@ -343,9 +363,19 @@ private fun GreetingText(name: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MealCard(meal: Meal) {
+fun MealCard(
+    meal: Meal,
+    ingredients: List<Ingredient>,
+    onMealCompleted: (Meal) -> Unit,
+    onMealRemovedFromCompleted: (Meal) -> Unit
+) {
     // state variable for check box
     var isChecked by rememberSaveable {
+        mutableStateOf(meal.isMealCompleted)
+    }
+
+    // state variable for showing ingredients
+    var showIngredients by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -392,6 +422,11 @@ fun MealCard(meal: Meal) {
                         checked = isChecked,
                         onCheckedChange = {
                             isChecked = !isChecked
+                            if (isChecked) {
+                                onMealCompleted(meal)
+                            } else {
+                                onMealRemovedFromCompleted(meal)
+                            }
                         }
                     )
                 }
@@ -443,19 +478,119 @@ fun MealCard(meal: Meal) {
                     )
                 }
 
-                // button for expanding the meal to show ingredients
-                IconButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                ) {
-                    Image(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = stringResource(id = R.string.expand_meal),
-                        colorFilter = ColorFilter.tint(if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight) // Updated color
-                    )
+                // button for expanding and closing the meal to show ingredients
+                if (showIngredients) {
+                    IconButton(
+                        onClick = { showIngredients = false },
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
+                        Image(
+                            imageVector = Icons.Default.KeyboardArrowUp,
+                            contentDescription = stringResource(id = R.string.close_expanded_meal),
+                            colorFilter = ColorFilter.tint(if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight)
+                        )
+                    }
+                } else {
+                    IconButton(
+                        onClick = { showIngredients = true },
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
+                        Image(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = stringResource(id = R.string.expand_meal),
+                            colorFilter = ColorFilter.tint(if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight)
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(visible = showIngredients) {
+                Column {
+                    ingredients.forEach { ingredient ->
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = ingredient.name,
+                                    fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                )
+                                Row(
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                ) {
+                                    Text(
+                                        text = ingredient.quantity
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.bullet_point),
+                                        modifier = Modifier.padding(horizontal = 4.dp)
+                                    )
+                                    Text(
+                                        text = "${ingredient.calories} " + stringResource(id = R.string.calorie_unit)
+                                    )
+                                }
+                            }
+                            Modifier.weight(1f)
+                            Row {
+                                IngredientNutritionalInfo(
+                                    value = ingredient.protein,
+                                    unit = R.string.gram_unit,
+                                    nutritionType = "Protein"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                IngredientNutritionalInfo(
+                                    value = ingredient.carbs,
+                                    unit = R.string.gram_unit,
+                                    nutritionType = "Carbs"
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                IngredientNutritionalInfo(
+                                    value = ingredient.fat,
+                                    unit = R.string.gram_unit,
+                                    nutritionType = "Fat"
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun IngredientNutritionalInfo(
+    value: String,
+    @StringRes unit: Int,
+    nutritionType: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                text = value,
+                fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                modifier = Modifier.align(Alignment.Bottom)
+            )
+            Text(
+                text = " " + stringResource(id = unit),
+                fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                modifier = Modifier.align(Alignment.Bottom)
+            )
+        }
+        Text(
+            text = nutritionType,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            fontSize = MaterialTheme.typography.titleSmall.fontSize
+        )
     }
 }
 
@@ -504,6 +639,26 @@ fun MealCardPreview() {
             totalProtein = "60",
             totalFat = "25",
             totalCarbs = "120"
-        )
+        ),
+        ingredients = listOf(
+            Ingredient(
+                name = "Milk",
+                quantity = "500 ml",
+                calories = "500",
+                protein = "60",
+                carbs = "80",
+                fat = "15",
+            ),
+            Ingredient(
+                name = "Banana",
+                quantity = "2 No.",
+                calories = "200",
+                protein = "6",
+                carbs = "20",
+                fat = "2",
+            )
+        ),
+        onMealCompleted = {},
+        onMealRemovedFromCompleted = {}
     )
 }
