@@ -61,6 +61,7 @@
     <string name="meal">Add Meal</string>
     <string name="empty_ingredient_list">Add some ingredients to this meal!</string>
     <string name="quantity_type">Quantity type</string>
+    <string name="expand_meal">Click here to get more information about the meal</string>
     <string-array name="quantity_type_list">
         <item>No.</item>
         <item>g</item>

@@ -5,8 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.calorietracker.ui.Screens
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
-import com.example.calorietracker.ui.onboarding.Screens
 import com.example.calorietracker.ui.screens.HomeScreen
 import com.example.calorietracker.ui.screens.MealAddingScreen
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel

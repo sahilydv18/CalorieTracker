@@ -1,5 +1,9 @@
 package com.example.calorietracker.ui.screens
 
+import android.annotation.SuppressLint
+import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,13 +14,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,14 +42,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calorietracker.R
+import com.example.calorietracker.database.Meal
 import com.example.calorietracker.ui.HomeScreenFAB
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
+import com.example.calorietracker.ui.theme.backgroundDark
+import com.example.calorietracker.ui.theme.backgroundLight
+import com.example.calorietracker.ui.theme.onSurfaceDark
+import com.example.calorietracker.ui.theme.onSurfaceLight
+import com.example.calorietracker.ui.theme.onSurfaceVariantDark
+import com.example.calorietracker.ui.theme.onSurfaceVariantLight
+import com.example.calorietracker.ui.theme.onTertiaryContainerDark
+import com.example.calorietracker.ui.theme.onTertiaryContainerLight
+import com.example.calorietracker.ui.theme.primaryDark
+import com.example.calorietracker.ui.theme.primaryLight
+import com.example.calorietracker.ui.theme.secondaryDark
+import com.example.calorietracker.ui.theme.secondaryLight
+import com.example.calorietracker.ui.theme.surfaceVariantDark
+import com.example.calorietracker.ui.theme.surfaceVariantLight
+import com.example.calorietracker.ui.theme.tertiaryContainerDark
+import com.example.calorietracker.ui.theme.tertiaryContainerLight
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,7 +84,7 @@ fun HomeScreen(
     onAddButtonClicked: () -> Unit
 ) {
 
-    // val mealUiState = databaseViewModel.mealUiState.collectAsState()
+    val mealUiState = databaseViewModel.mealUiState.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -88,13 +125,14 @@ fun HomeScreen(
                     onAddButtonClicked()
                 }
             )
-        }
+        },
+        containerColor = if (isSystemInDarkTheme()) backgroundDark else backgroundLight
     ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LaunchedEffect(Unit) {
                 coroutineScope.launch(Dispatchers.IO) {
@@ -122,14 +160,24 @@ fun HomeScreen(
                 }
             }
 
-            GreetingText(name = name)
-            
+            GreetingText(
+                name = name,
+                modifier = Modifier.align(Alignment.Start)
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isSystemInDarkTheme()) {
+                        tertiaryContainerDark
+                    } else {
+                        tertiaryContainerLight
+                    }
+                )
             ) {
                 Row(
                     modifier = Modifier
@@ -142,7 +190,7 @@ fun HomeScreen(
                         NutritionalProgressIndicators(
                             completedValue = completedCalorie,
                             totalValue = calorie,
-                            color = Color(red = 3, green = 252, blue = 40),
+                            color = Color(3,252,40),
                             modifier = Modifier
                                 .size(180.dp)
                                 .align(Alignment.Center)
@@ -182,7 +230,7 @@ fun HomeScreen(
                             completedValue = completedCalorie,
                             totalValue = calorie,
                             unit = "kcal",
-                            Color(red = 3, green = 252, blue = 40)
+                            Color(3,252,40)
                         )
                         NutritionalInfo(
                             title = "Protein",
@@ -207,15 +255,21 @@ fun HomeScreen(
                         )
                     }
                 }
+            }
 
-
-//        Text(text = "Welcome $name to home screen")
-//        Text(text = "List of meal: ")
-//        LazyColumn {
-//            items(mealUiState.value.meals) {
-//                Text(text = it.mealName)
-//            }
-//        }
+            Text(
+                text = "Your Meals",
+                fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp),
+                color = if (isSystemInDarkTheme()) primaryDark else primaryLight
+            )
+            LazyColumn {
+                items(mealUiState.value.meals) {
+                    MealCard(meal = it)
+                }
             }
         }
     }
@@ -243,6 +297,7 @@ private fun NutritionalProgressIndicators(
     )
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 private fun NutritionalInfo(
     title: String,
@@ -257,7 +312,8 @@ private fun NutritionalInfo(
         Text(
             text = title,
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = if (isSystemInDarkTheme()) onTertiaryContainerDark else onTertiaryContainerLight
         )
         Text(
             text = "${String.format("%.0f", completedValue)}/$totalValue $unit",
@@ -269,7 +325,7 @@ private fun NutritionalInfo(
 
 // greeting text for the user
 @Composable
-private fun GreetingText(name: String) {
+private fun GreetingText(name: String, modifier: Modifier = Modifier) {
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     val greeting = when (currentHour) {
         in 0..11 -> "Good Morning"
@@ -281,6 +337,173 @@ private fun GreetingText(name: String) {
         fontSize = MaterialTheme.typography.displaySmall.fontSize,
         fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
         lineHeight = 40.sp,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = modifier.padding(horizontal = 16.dp),
+        color = if (isSystemInDarkTheme()) secondaryDark else secondaryLight,
+    )
+}
+
+@Composable
+fun MealCard(meal: Meal) {
+    // state variable for check box
+    var isChecked by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    Card(
+        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSystemInDarkTheme()) surfaceVariantDark else surfaceVariantLight
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = meal.mealName,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = if (isSystemInDarkTheme()) onSurfaceVariantDark else onSurfaceVariantLight
+                )
+                Modifier.weight(1f)
+                Row {
+                    // delete button
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Image(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = stringResource(id = R.string.delete),
+                            colorFilter = ColorFilter.tint(if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight) // Updated color
+                        )
+                    }
+                    // edit button
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Image(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(id = R.string.edit),
+                            colorFilter = ColorFilter.tint(if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight) // Updated color
+                        )
+                    }
+                    // checkbox for checking if the meal is completed or not
+                    Checkbox(
+                        checked = isChecked,
+                        onCheckedChange = {
+                            isChecked = !isChecked
+                        }
+                    )
+                }
+            }
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // calorie display
+                MealNutritionalInfo(
+                    value = meal.totalCalorie,
+                    unit = R.string.calorie_unit,
+                    valueFontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                    unitFontSize = MaterialTheme.typography.titleMedium.fontSize,
+                    nutritionType = "Calorie",
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+
+                Row {
+                    // protein display
+                    MealNutritionalInfo(
+                        value = meal.totalProtein,
+                        unit = R.string.gram_unit,
+                        valueFontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        unitFontSize = MaterialTheme.typography.titleSmall.fontSize,
+                        nutritionType = "Protein"
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    // carbs display
+                    MealNutritionalInfo(
+                        value = meal.totalCarbs,
+                        unit = R.string.gram_unit,
+                        valueFontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        unitFontSize = MaterialTheme.typography.titleSmall.fontSize,
+                        nutritionType = "Carbs"
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    // fat display
+                    MealNutritionalInfo(
+                        value = meal.totalFat,
+                        unit = R.string.gram_unit,
+                        valueFontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        unitFontSize = MaterialTheme.typography.titleSmall.fontSize,
+                        nutritionType = "Fat"
+                    )
+                }
+
+                // button for expanding the meal to show ingredients
+                IconButton(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    Image(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = stringResource(id = R.string.expand_meal),
+                        colorFilter = ColorFilter.tint(if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight) // Updated color
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MealNutritionalInfo(
+    value: String,
+    @StringRes unit: Int,
+    valueFontSize: TextUnit,
+    unitFontSize: TextUnit,
+    nutritionType: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Row {
+            Text(
+                text = value,
+                fontSize = valueFontSize,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.Bottom)
+            )
+            Text(
+                text = " " + stringResource(id = unit),
+                fontSize = unitFontSize,
+                modifier = Modifier.align(Alignment.Bottom)
+            )
+        }
+        if (nutritionType != "Calorie") {
+            Text(
+                text = nutritionType,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                fontSize = MaterialTheme.typography.titleMedium.fontSize
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MealCardPreview() {
+    MealCard(
+        meal = Meal(
+            mealName = "Breakfast",
+            totalCalorie = "880",
+            totalProtein = "60",
+            totalFat = "25",
+            totalCarbs = "120"
+        )
     )
 }

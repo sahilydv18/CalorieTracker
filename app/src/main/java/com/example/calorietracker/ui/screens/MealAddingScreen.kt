@@ -13,14 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -48,6 +49,18 @@ import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.database.Meal
 import com.example.calorietracker.ui.MealAddingScreenTopAppBar
+import com.example.calorietracker.ui.theme.backgroundDark
+import com.example.calorietracker.ui.theme.backgroundLight
+import com.example.calorietracker.ui.theme.onPrimaryDark
+import com.example.calorietracker.ui.theme.onPrimaryLight
+import com.example.calorietracker.ui.theme.onSecondaryContainerDark
+import com.example.calorietracker.ui.theme.onSecondaryContainerLight
+import com.example.calorietracker.ui.theme.onSurfaceDark
+import com.example.calorietracker.ui.theme.onSurfaceLight
+import com.example.calorietracker.ui.theme.primaryDark
+import com.example.calorietracker.ui.theme.primaryLight
+import com.example.calorietracker.ui.theme.secondaryContainerDark
+import com.example.calorietracker.ui.theme.secondaryContainerLight
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 import com.example.calorietracker.ui.viewmodel.IngredientItem
 import com.example.calorietracker.ui.viewmodel.toIngredient
@@ -118,15 +131,66 @@ fun MealAddingScreen(
             MealAddingScreenTopAppBar {
                 onBackButtonClicked()
             }
-        }
+        },
+        bottomBar = {
+            // conformation and cancellation buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 32.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                // cancel button
+                OutlinedButton(onClick = { onCancelButtonClicked() }) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
+                Modifier.weight(1f)
+                // add button
+                Button(
+                    onClick = {
+                        databaseViewModel.insertIngredientsForMeal(
+                            meal = Meal(
+                                mealName = mealName,
+                                totalCalorie = totalCalorie,
+                                totalProtein = totalProtein,
+                                totalCarbs = totalCarbs,
+                                totalFat = totalFat
+                            ),
+                            mealIngredients = mealIngredients
+                        )
+                        onAddButtonClicked()
+                    },
+                    enabled = mealIngredients.isNotEmpty() && mealName.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSystemInDarkTheme()) primaryDark else primaryLight,
+                        contentColor = if (isSystemInDarkTheme()) onPrimaryDark else onPrimaryLight
+                    )
+                ) {
+                    Row {
+                        Image(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = R.string.add),
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.add),
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+            }
+        },
+        containerColor = if (isSystemInDarkTheme()) backgroundDark else backgroundLight
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
+                .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
             // text field for entering meal name
             OutlinedTextField(
                 value = mealName,
@@ -145,7 +209,7 @@ fun MealAddingScreen(
             // Nutritional info for a meal
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.padding(start = 32.dp, end = 32.dp, top = 8.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(top = 8.dp)
@@ -183,9 +247,13 @@ fun MealAddingScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // button to add ingredients to a meal
-            Button(onClick = {
-                showDialog = true
-            }) {
+            Button(
+                onClick = { showDialog = true },
+                colors = ButtonDefaults.buttonColors( // Set button colors
+                    containerColor = if (isSystemInDarkTheme()) secondaryContainerDark else secondaryContainerLight,
+                    contentColor = if (isSystemInDarkTheme()) onSecondaryContainerDark else onSecondaryContainerLight
+                )
+            ) {
                 Row {
                     Image(
                         imageVector = Icons.Default.Add,
@@ -203,13 +271,15 @@ fun MealAddingScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // lazy column to display the list of ingredients present in a meal
-            Column {
+            LazyColumn {
                 if (mealIngredients.isEmpty()) {
-                    Text(text = stringResource(id = R.string.empty_ingredient_list))
+                    item {
+                        Text(text = stringResource(id = R.string.empty_ingredient_list))
+                    }
                 } else {
                     // Convert the entire list to Ingredient objects
                     val ingredients = mealIngredients.map { it.toIngredient() }
-                    ingredients.forEach {
+                    items(ingredients) {
                         IngredientCard(
                             ingredient = it,
                             onEditButtonClicked = { ingredient ->
@@ -220,58 +290,14 @@ fun MealAddingScreen(
                                 mealIngredients.remove(ingredient.toIngredientItem())
 
                                 // updating the nutritional values for meal when ingredient is removed
-                                totalCalorie = (totalCalorie.toInt() - ingredient.calories.toInt()).toString()
-                                totalProtein = (totalProtein.toInt() - ingredient.protein.toInt()).toString()
-                                totalCarbs = (totalCarbs.toInt() - ingredient.carbs.toInt()).toString()
+                                totalCalorie =
+                                    (totalCalorie.toInt() - ingredient.calories.toInt()).toString()
+                                totalProtein =
+                                    (totalProtein.toInt() - ingredient.protein.toInt()).toString()
+                                totalCarbs =
+                                    (totalCarbs.toInt() - ingredient.carbs.toInt()).toString()
                                 totalFat = (totalFat.toInt() - ingredient.fat.toInt()).toString()
                             }
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // conformation and cancellation buttons
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                // cancel button
-                OutlinedButton(onClick = { onCancelButtonClicked() }) {
-                    Text(text = stringResource(id = R.string.cancel))
-                }
-                Modifier.weight(1f)
-                // add button
-                Button(
-                    onClick = {
-                        databaseViewModel.insertIngredientsForMeal(
-                            meal = Meal(
-                                mealName = mealName,
-                                totalCalorie = totalCalorie,
-                                totalProtein = totalProtein,
-                                totalCarbs = totalCarbs,
-                                totalFat = totalFat
-                            ),
-                            mealIngredients = mealIngredients
-                        )
-                        onAddButtonClicked()
-                    },
-                    enabled = mealIngredients.isNotEmpty() && mealName.isNotBlank()
-                ) {
-                    Row {
-                        Image(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add),
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(id = R.string.add),
-                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
                 }
@@ -301,8 +327,10 @@ fun MealAddingScreen(
                     mealIngredients.remove(ingredientToAdd.toIngredientItem())          // removing the old ingredient
 
                     // updating the nutritional values for meal when ingredient is updated, subtracting the calories of previous ingredient
-                    totalCalorie = (totalCalorie.toInt() - ingredientToAdd.calories.toInt()).toString()
-                    totalProtein = (totalProtein.toInt() - ingredientToAdd.protein.toInt()).toString()
+                    totalCalorie =
+                        (totalCalorie.toInt() - ingredientToAdd.calories.toInt()).toString()
+                    totalProtein =
+                        (totalProtein.toInt() - ingredientToAdd.protein.toInt()).toString()
                     totalCarbs = (totalCarbs.toInt() - ingredientToAdd.carbs.toInt()).toString()
                     totalFat = (totalFat.toInt() - ingredientToAdd.fat.toInt()).toString()
 
@@ -385,7 +413,10 @@ private fun IngredientCard(
                     }
                 }
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = if (isSystemInDarkTheme()) onSurfaceDark else onSurfaceLight
+            )
             Row {
                 Column {
                     NutritionalInfo(

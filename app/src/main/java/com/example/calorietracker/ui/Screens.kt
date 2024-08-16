@@ -1,4 +1,4 @@
-package com.example.calorietracker.ui.onboarding
+package com.example.calorietracker.ui
 
 enum class Screens {
     FIRST_SCREEN,

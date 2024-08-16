@@ -23,7 +23,7 @@ class DatabaseViewModel @Inject constructor(
 ): ViewModel() {
 
     // ui state to store list of meals and showing it on UI
-    private val _mealUiState: StateFlow<MealUiState> = mealRepo.getAllMeals().map {
+    private var _mealUiState: StateFlow<MealUiState> = mealRepo.getAllMeals().map {
         MealUiState(
             meals = it
         )
@@ -36,12 +36,12 @@ class DatabaseViewModel @Inject constructor(
     val mealUiState = _mealUiState
 
     // function for inserting meals
-    suspend fun insertMeal(meal: Meal): Long {
+    private suspend fun insertMeal(meal: Meal): Long {
         return mealRepo.insertMeal(meal)
     }
 
     // function for inserting ingredients
-    suspend fun insertIngredient(ingredientItem: IngredientItem): Long {
+    private suspend fun insertIngredient(ingredientItem: IngredientItem): Long {
         return mealRepo.insertIngredient(ingredientItem.toIngredient())
     }
 

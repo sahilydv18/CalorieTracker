@@ -10,24 +10,31 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import com.example.calorietracker.R
-import java.util.Calendar
+import com.example.calorietracker.ui.theme.onPrimaryContainerDark
+import com.example.calorietracker.ui.theme.onPrimaryContainerLight
+import com.example.calorietracker.ui.theme.onSecondaryContainerDark
+import com.example.calorietracker.ui.theme.onSecondaryContainerLight
+import com.example.calorietracker.ui.theme.primaryContainerDark
+import com.example.calorietracker.ui.theme.primaryContainerLight
+import com.example.calorietracker.ui.theme.secondaryContainerDark
+import com.example.calorietracker.ui.theme.secondaryContainerLight
 
 // FAB for home screen
 @Composable
 fun HomeScreenFAB(
     onAddButtonClicked: () -> Unit
 ) {
-    FloatingActionButton(onClick = { onAddButtonClicked() }) {
+    FloatingActionButton(
+        onClick = { onAddButtonClicked() },
+        containerColor = if (isSystemInDarkTheme()) secondaryContainerDark else secondaryContainerLight,
+        contentColor = if (isSystemInDarkTheme()) onSecondaryContainerDark else onSecondaryContainerLight
+    ) {
         Icon(
             imageVector = Icons.Filled.Add,
             contentDescription = stringResource(id = R.string.add_meal)
@@ -51,15 +58,20 @@ fun MealAddingScreenTopAppBar(
                     Image(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(id = R.string.back),
-                        colorFilter = ColorFilter.tint(Color.White)
+                        colorFilter = ColorFilter.tint(onPrimaryContainerDark)
                     )
                 } else {
                     Image(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back)
+                        contentDescription = stringResource(id = R.string.back),
+                        colorFilter = ColorFilter.tint(onPrimaryContainerLight)
                     )
                 }
             }
-        }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = if (isSystemInDarkTheme()) primaryContainerDark else primaryContainerLight,
+            titleContentColor = if (isSystemInDarkTheme()) onPrimaryContainerDark else onPrimaryContainerLight
+        )
     )
 }
