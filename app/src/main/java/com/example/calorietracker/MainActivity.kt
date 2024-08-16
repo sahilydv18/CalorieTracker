@@ -38,10 +38,9 @@ class MainActivity : ComponentActivity() {
 
             val navController: NavHostController = rememberNavController()
 
-            // NOTE : this is a temporary solution, fix it when you use database to store meals
-            // checking if the list contains 1 element before closing the splash screen to make sure that the data is loaded for the data store preferences file
+            // checking if the meal list is populated before removing splash screen
             splashScreen.setKeepOnScreenCondition {
-                onboardingViewModel.conditionForSplashScreen.size < 1
+                databaseViewModel.mealUiState.value.meals.isEmpty()
             }
 
             CalorieTrackerTheme {
