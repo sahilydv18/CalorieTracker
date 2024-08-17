@@ -3,6 +3,8 @@ package com.example.calorietracker.ui.screens
 import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -126,7 +128,8 @@ fun HomeScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LaunchedEffect(Unit) {
@@ -253,7 +256,7 @@ fun HomeScreen(
             }
 
             Text(
-                text = "Your Meals",
+                text = stringResource(id = R.string.your_meals),
                 fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                 fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
                 modifier = Modifier
@@ -261,8 +264,9 @@ fun HomeScreen(
                     .padding(start = 16.dp),
                 color = if (isSystemInDarkTheme()) primaryDark else primaryLight
             )
-            LazyColumn {
-                items(mealUiState.value.meals) { meal ->
+
+            Column {
+                mealUiState.value.meals.forEach { meal ->
                     val ingredients by databaseViewModel.getIngredientsForMeal(meal.mealID)
                         .collectAsState(emptyList())
                     MealCard(
@@ -289,7 +293,6 @@ fun HomeScreen(
             }
         }
     }
-
 }
 
 @Composable
@@ -299,12 +302,18 @@ private fun NutritionalProgressIndicators(
     color: Color,
     modifier: Modifier
 ) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = completedValue,
+        animationSpec = tween(durationMillis = 3000),
+        label = ""
+    )
+
     CircularProgressIndicator(
         progress = {
             if (totalValue.isNullOrEmpty()) {
-                (completedValue / 1F)
+                (animatedProgress / 1F)
             } else {
-                (completedValue / totalValue.toFloat())
+                (animatedProgress / totalValue.toFloat())
             }
         },
         color = color,
@@ -322,6 +331,14 @@ private fun NutritionalInfo(
     unit: String,
     color: Color
 ) {
+    val value by animateFloatAsState(
+        targetValue = completedValue,
+        label = "",
+        animationSpec = tween(
+            durationMillis = 2000
+        )
+    )
+
     Column(
         modifier = Modifier.padding(bottom = 4.dp)
     ) {
@@ -332,7 +349,7 @@ private fun NutritionalInfo(
             color = if (isSystemInDarkTheme()) onTertiaryContainerDark else onTertiaryContainerLight
         )
         Text(
-            text = "${String.format("%.0f", completedValue)}/$totalValue $unit",
+            text = "${String.format("%.0f", value)}/$totalValue $unit",
             modifier = Modifier.align(Alignment.CenterHorizontally),
             color = color
         )
@@ -444,6 +461,8 @@ fun MealCard(
                     nutritionType = "Calorie",
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
+
+                Spacer(modifier = Modifier.width(8.dp))
 
                 Row {
                     // protein display
