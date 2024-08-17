@@ -6,6 +6,7 @@ import com.example.calorietracker.datastore.repo.PreferencesRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,21 +25,21 @@ class OnboardingViewModel @Inject constructor(
     // a list made to control the showing of splash screen, it will contain the value from data store preferences file
     val conditionForSplashScreen: MutableList<Boolean> = mutableListOf()
 
-//    // variable for getting the completed calorie value from data store
-//    private val _completedCalorie = MutableStateFlow(0F)
-//    val completedCalorie: StateFlow<Float> = _completedCalorie.asStateFlow()
-//
-//    // variable for getting the completed protein value from data store
-//    private val _completedProtein = MutableStateFlow(0F)
-//    val completedProtein: StateFlow<Float> = _completedProtein.asStateFlow()
-//
-//    // variable for getting the completed carbs value from data store
-//    private val _completedCarbs = MutableStateFlow(0F)
-//    val completedCarbs: StateFlow<Float> = _completedCarbs.asStateFlow()
-//
-//    // variable for getting the completed fat value from data store
-//    private val _completedFat = MutableStateFlow(0F)
-//    val completedFat: StateFlow<Float> = _completedFat.asStateFlow()
+    // variable for getting the completed calorie value from data store, using flow to observe changes
+    private val _completedCalorie = MutableStateFlow("")
+    val completedCalorie: StateFlow<String> = _completedCalorie.asStateFlow()
+
+    // variable for getting the completed protein value from data store, using flow to observe changes
+    private val _completedProtein = MutableStateFlow("")
+    val completedProtein: StateFlow<String> = _completedProtein.asStateFlow()
+
+    // variable for getting the completed carbs value from data store, using flow to observe changes
+    private val _completedCarbs = MutableStateFlow("")
+    val completedCarbs: StateFlow<String> = _completedCarbs.asStateFlow()
+
+    // variable for getting the completed fat value from data store, using flow to observe changes
+    private val _completedFat = MutableStateFlow("")
+    val completedFat: StateFlow<String> = _completedFat.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -48,21 +49,29 @@ class OnboardingViewModel @Inject constructor(
             conditionForSplashScreen.add(_shouldShowOnboardingScreen.value)
         }
 
-//        viewModelScope.launch {
-//            _completedCalorie.value = preferencesRepo.getCompletedCalorie().toFloatOrNull() ?: 0F
-//        }
-//
-//        viewModelScope.launch {
-//            _completedProtein.value = preferencesRepo.getCompletedProtein().toFloatOrNull() ?: 0F
-//        }
-//
-//        viewModelScope.launch {
-//            _completedCarbs.value = preferencesRepo.getCompletedCarbs().toFloatOrNull() ?: 0F
-//        }
-//
-//        viewModelScope.launch {
-//            _completedFat.value = preferencesRepo.getCompletedFat().toFloatOrNull() ?: 0F
-//        }
+        viewModelScope.launch {
+            preferencesRepo.getCompletedCalorie().collect {
+                _completedCalorie.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            preferencesRepo.getCompletedProtein().collect {
+                _completedProtein.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            preferencesRepo.getCompletedCarbs().collect {
+                _completedCarbs.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            preferencesRepo.getCompletedFat().collect {
+                _completedFat.value = it
+            }
+        }
     }
 
     fun updateShouldShowOnboardingScreen(shouldShowOnboardingScreen: Boolean) {
@@ -215,11 +224,11 @@ class OnboardingViewModel @Inject constructor(
     }
 
     // functions to get and update completed calories
-    suspend fun getCompletedCalorie(): String {
-        return withContext(Dispatchers.IO) {
-            preferencesRepo.getCompletedCalorie()
-        }
-    }
+//    suspend fun getCompletedCalorie(): String {
+//        return withContext(Dispatchers.IO) {
+//            preferencesRepo.getCompletedCalorie()
+//        }
+//    }
 
     fun updateCompletedCalorie(completedCalorie: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -227,12 +236,12 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    // functions to get and update completed protein
-    suspend fun getCompletedProtein(): String {
-        return withContext(Dispatchers.IO) {
-            preferencesRepo.getCompletedProtein()
-        }
-    }
+//    // functions to get and update completed protein
+//    suspend fun getCompletedProtein(): String {
+//        return withContext(Dispatchers.IO) {
+//            preferencesRepo.getCompletedProtein()
+//        }
+//    }
 
     fun updateCompletedProtein(completedProtein: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -240,12 +249,12 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    // functions to get and update completed carbs
-    suspend fun getCompletedCarbs(): String {
-        return withContext(Dispatchers.IO) {
-            preferencesRepo.getCompletedCarbs()
-        }
-    }
+//    // functions to get and update completed carbs
+//    suspend fun getCompletedCarbs(): String {
+//        return withContext(Dispatchers.IO) {
+//            preferencesRepo.getCompletedCarbs()
+//        }
+//    }
 
     fun updateCompletedCarbs(completedCarbs: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -253,12 +262,12 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    // functions to get and update completed fat
-    suspend fun getCompletedFat(): String {
-        return withContext(Dispatchers.IO) {
-            preferencesRepo.getCompletedFat()
-        }
-    }
+//    // functions to get and update completed fat
+//    suspend fun getCompletedFat(): String {
+//        return withContext(Dispatchers.IO) {
+//            preferencesRepo.getCompletedFat()
+//        }
+//    }
 
     fun updateCompletedFat(completedFat: Int) {
         viewModelScope.launch(Dispatchers.IO) {

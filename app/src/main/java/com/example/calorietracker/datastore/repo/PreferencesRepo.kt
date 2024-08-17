@@ -1,5 +1,7 @@
 package com.example.calorietracker.datastore.repo
 
+import kotlinx.coroutines.flow.Flow
+
 // all functions to get and set values in data store preferences file
 interface PreferencesRepo {
     suspend fun getName(): String
@@ -38,15 +40,15 @@ interface PreferencesRepo {
     suspend fun shouldShowOnboardingScreen(): Boolean
     suspend fun updateShouldShowOnboardingScreen(shouldShowOnboardingScreen: Boolean)
 
-    suspend fun getCompletedCalorie(): String
+    suspend fun getCompletedCalorie(): Flow<String>
     suspend fun updateCompletedCalorie(completedCalorie: Int)
 
-    suspend fun getCompletedProtein(): String
+    suspend fun getCompletedProtein(): Flow<String>
     suspend fun updateCompletedProtein(completedProtein: Int)
 
-    suspend fun getCompletedCarbs(): String
+    suspend fun getCompletedCarbs(): Flow<String>
     suspend fun updateCompletedCarbs(completedCarbs: Int)
 
-    suspend fun getCompletedFat(): String
+    suspend fun getCompletedFat(): Flow<String>
     suspend fun updateCompletedFat(completedFat: Int)
 }

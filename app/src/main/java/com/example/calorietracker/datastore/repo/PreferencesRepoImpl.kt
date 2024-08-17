@@ -1,15 +1,20 @@
 package com.example.calorietracker.datastore.repo
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import com.example.calorietracker.datastore.PreferencesKeys
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PreferencesRepoImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>
-): PreferencesRepo {
+) : PreferencesRepo {
     override suspend fun getName(): String {
         return dataStore.data.first()[PreferencesKeys.NAME] ?: ""
     }
@@ -130,9 +135,21 @@ class PreferencesRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCompletedCalorie(): String {
-        return dataStore.data.first()[PreferencesKeys.COMPLETED_CALORIE].toString()
+    // using flow to observe changes
+    override suspend fun getCompletedCalorie(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.COMPLETED_CALORIE].toString()
+            }
     }
+
 
     override suspend fun updateCompletedCalorie(completedCalorie: Int) {
         dataStore.edit {
@@ -140,8 +157,19 @@ class PreferencesRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCompletedProtein(): String {
-        return dataStore.data.first()[PreferencesKeys.COMPLETED_PROTEIN].toString()
+    // using flow to observe changes
+    override suspend fun getCompletedProtein(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.COMPLETED_PROTEIN].toString()
+            }
     }
 
     override suspend fun updateCompletedProtein(completedProtein: Int) {
@@ -150,8 +178,19 @@ class PreferencesRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCompletedCarbs(): String {
-        return dataStore.data.first()[PreferencesKeys.COMPLETED_CARBS].toString()
+    // using flow to observe changes
+    override suspend fun getCompletedCarbs(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.COMPLETED_CARBS].toString()
+            }
     }
 
     override suspend fun updateCompletedCarbs(completedCarbs: Int) {
@@ -160,8 +199,19 @@ class PreferencesRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCompletedFat(): String {
-        return dataStore.data.first()[PreferencesKeys.COMPLETED_FAT].toString()
+    // using flow to observe changes
+    override suspend fun getCompletedFat(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferencesKeys.COMPLETED_FAT].toString()
+            }
     }
 
     override suspend fun updateCompletedFat(completedFat: Int) {

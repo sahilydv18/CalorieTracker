@@ -1,7 +1,6 @@
 package com.example.calorietracker.ui.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -75,9 +74,7 @@ import com.example.calorietracker.ui.theme.surfaceVariantLight
 import com.example.calorietracker.ui.theme.tertiaryContainerDark
 import com.example.calorietracker.ui.theme.tertiaryContainerLight
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -110,18 +107,10 @@ fun HomeScreen(
         mutableStateOf("")
     }
 
-    var completedCalorie by rememberSaveable {
-        mutableStateOf("")
-    }
-    var completedProtein by rememberSaveable {
-        mutableStateOf("")
-    }
-    var completedCarbs by rememberSaveable {
-        mutableStateOf("")
-    }
-    var completedFat by rememberSaveable {
-        mutableStateOf("")
-    }
+    val completedCalorie by onboardingViewModel.completedCalorie.collectAsState()
+    val completedProtein by onboardingViewModel.completedProtein.collectAsState()
+    val completedCarbs by onboardingViewModel.completedCarbs.collectAsState()
+    val completedFat by onboardingViewModel.completedFat.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -165,32 +154,6 @@ fun HomeScreen(
                     fat = onboardingViewModel.getFat()
                 }
             }
-
-            LaunchedEffect(Unit) {
-                coroutineScope.launch(Dispatchers.IO) {
-                    completedCalorie = onboardingViewModel.getCompletedCalorie()
-                }
-            }
-            LaunchedEffect(Unit) {
-                coroutineScope.launch(Dispatchers.IO) {
-                    completedProtein = onboardingViewModel.getCompletedProtein()
-                }
-            }
-            LaunchedEffect(Unit) {
-                coroutineScope.launch(Dispatchers.IO) {
-                    completedCarbs = onboardingViewModel.getCompletedCarbs()
-                }
-            }
-            LaunchedEffect(Unit) {
-                coroutineScope.launch(Dispatchers.IO) {
-                    completedFat = onboardingViewModel.getCompletedFat()
-                }
-            }
-
-            Log.d("CompletedCalorie", completedCalorie)
-            Log.d("CompletedProtein", completedProtein)
-            Log.d("CompletedCarbs", completedCarbs)
-            Log.d("CompletedFat", completedFat)
 
             GreetingText(
                 name = name,
@@ -312,23 +275,6 @@ fun HomeScreen(
                             onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) + completedMeal.totalProtein.toInt()))
                             onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) + completedMeal.totalCarbs.toInt()))
                             onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) + completedMeal.totalFat.toInt()))
-
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedCalorie = onboardingViewModel.getCompletedCalorie()
-                            }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedProtein = onboardingViewModel.getCompletedProtein()
-                            }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedCarbs = onboardingViewModel.getCompletedCarbs()
-                            }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedFat = onboardingViewModel.getCompletedFat()
-                            }
                         },
                         onMealRemovedFromCompleted = { removedMeal ->
                             databaseViewModel.updateMealCompletedStatus(removedMeal.mealID, false)
@@ -337,23 +283,6 @@ fun HomeScreen(
                             onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - removedMeal.totalProtein.toInt()))
                             onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - removedMeal.totalCarbs.toInt()))
                             onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - removedMeal.totalFat.toInt()))
-
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedCalorie = onboardingViewModel.getCompletedCalorie()
-                            }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedProtein = onboardingViewModel.getCompletedProtein()
-                            }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedCarbs = onboardingViewModel.getCompletedCarbs()
-                            }
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(1000)
-                                completedFat = onboardingViewModel.getCompletedFat()
-                            }
                         }
                     )
                 }
