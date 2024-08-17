@@ -75,7 +75,9 @@ import com.example.calorietracker.ui.theme.surfaceVariantLight
 import com.example.calorietracker.ui.theme.tertiaryContainerDark
 import com.example.calorietracker.ui.theme.tertiaryContainerLight
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -108,12 +110,18 @@ fun HomeScreen(
         mutableStateOf("")
     }
 
-    val completedCalorie by onboardingViewModel.completedCalorie.collectAsState()
-    val completedProtein by onboardingViewModel.completedProtein.collectAsState()
-    val completedCarbs by onboardingViewModel.completedCarbs.collectAsState()
-    val completedFat by onboardingViewModel.completedFat.collectAsState()
-
-    Log.d("completedCalorieFetchedValue", completedCalorie.toString())
+    var completedCalorie by rememberSaveable {
+        mutableStateOf("")
+    }
+    var completedProtein by rememberSaveable {
+        mutableStateOf("")
+    }
+    var completedCarbs by rememberSaveable {
+        mutableStateOf("")
+    }
+    var completedFat by rememberSaveable {
+        mutableStateOf("")
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -158,6 +166,32 @@ fun HomeScreen(
                 }
             }
 
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    completedCalorie = onboardingViewModel.getCompletedCalorie()
+                }
+            }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    completedProtein = onboardingViewModel.getCompletedProtein()
+                }
+            }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    completedCarbs = onboardingViewModel.getCompletedCarbs()
+                }
+            }
+            LaunchedEffect(Unit) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    completedFat = onboardingViewModel.getCompletedFat()
+                }
+            }
+
+            Log.d("CompletedCalorie", completedCalorie)
+            Log.d("CompletedProtein", completedProtein)
+            Log.d("CompletedCarbs", completedCarbs)
+            Log.d("CompletedFat", completedFat)
+
             GreetingText(
                 name = name,
                 modifier = Modifier.align(Alignment.Start)
@@ -186,7 +220,7 @@ fun HomeScreen(
                         Modifier.align(Alignment.CenterVertically)
                     ) {
                         NutritionalProgressIndicators(
-                            completedValue = completedCalorie,
+                            completedValue = completedCalorie.toFloatOrNull() ?: 0F,
                             totalValue = calorie,
                             color = Color(3, 252, 40),
                             modifier = Modifier
@@ -194,7 +228,7 @@ fun HomeScreen(
                                 .align(Alignment.Center)
                         )
                         NutritionalProgressIndicators(
-                            completedValue = completedProtein,
+                            completedValue = completedProtein.toFloatOrNull() ?: 0F,
                             totalValue = protein,
                             color = Color(254, 177, 24),
                             modifier = Modifier
@@ -202,7 +236,7 @@ fun HomeScreen(
                                 .align(Alignment.Center)
                         )
                         NutritionalProgressIndicators(
-                            completedValue = completedCarbs,
+                            completedValue = completedCarbs.toFloatOrNull() ?: 0F,
                             totalValue = carbs,
                             color = Color(241, 255, 24),
                             modifier = Modifier
@@ -210,7 +244,7 @@ fun HomeScreen(
                                 .align(Alignment.Center)
                         )
                         NutritionalProgressIndicators(
-                            completedValue = completedFat,
+                            completedValue = completedFat.toFloatOrNull() ?: 0F,
                             totalValue = fat,
                             color = Color(252, 84, 75),
                             modifier = Modifier
@@ -225,28 +259,28 @@ fun HomeScreen(
                     ) {
                         NutritionalInfo(
                             title = "Calorie",
-                            completedValue = completedCalorie,
+                            completedValue = completedCalorie.toFloatOrNull() ?: 0F,
                             totalValue = calorie,
                             unit = "kcal",
                             Color(3, 252, 40)
                         )
                         NutritionalInfo(
                             title = "Protein",
-                            completedValue = completedProtein,
+                            completedValue = completedProtein.toFloatOrNull() ?: 0F,
                             totalValue = protein,
                             unit = "g",
                             Color(254, 177, 24)
                         )
                         NutritionalInfo(
                             title = "Carbs",
-                            completedValue = completedCarbs,
+                            completedValue = completedCarbs.toFloatOrNull() ?: 0F,
                             totalValue = carbs,
                             unit = "g",
                             Color(241, 255, 24)
                         )
                         NutritionalInfo(
                             title = "Fat",
-                            completedValue = completedFat,
+                            completedValue = completedFat.toFloatOrNull() ?: 0F,
                             totalValue = fat,
                             unit = "g",
                             Color(252, 84, 75)
@@ -273,20 +307,53 @@ fun HomeScreen(
                         ingredients = ingredients,
                         onMealCompleted = { completedMeal ->
                             databaseViewModel.updateMealCompletedStatus(completedMeal.mealID, true)
-                            /*TODO("FIX THIS")*/
-                            //Log.d("CompletedCalories", (completedCalorie.toInt() + completedMeal.totalCalorie.toInt()).toString())
-//                            onboardingViewModel.updateCompletedCalorie((completedCalorie.toInt() + completedMeal.totalCalorie.toInt()))
-//                            onboardingViewModel.updateCompletedProtein((completedProtein.toInt() + completedMeal.totalProtein.toInt()))
-//                            onboardingViewModel.updateCompletedCarbs((completedCarbs.toInt() + completedMeal.totalCarbs.toInt()))
-//                            onboardingViewModel.updateCompletedFat((completedFat.toInt() + completedMeal.totalFat.toInt()))
+
+                            onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) + completedMeal.totalCalorie.toInt()))
+                            onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) + completedMeal.totalProtein.toInt()))
+                            onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) + completedMeal.totalCarbs.toInt()))
+                            onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) + completedMeal.totalFat.toInt()))
+
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedCalorie = onboardingViewModel.getCompletedCalorie()
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedProtein = onboardingViewModel.getCompletedProtein()
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedCarbs = onboardingViewModel.getCompletedCarbs()
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedFat = onboardingViewModel.getCompletedFat()
+                            }
                         },
                         onMealRemovedFromCompleted = { removedMeal ->
-                            //Log.d("CompletedCalories", completedCalorie.toString())
                             databaseViewModel.updateMealCompletedStatus(removedMeal.mealID, false)
-//                            onboardingViewModel.updateCompletedCalorie((completedCalorie.toInt() - removedMeal.totalCalorie.toInt()))
-//                            onboardingViewModel.updateCompletedProtein((completedProtein.toInt() - removedMeal.totalProtein.toInt()))
-//                            onboardingViewModel.updateCompletedCarbs((completedCarbs.toInt() - removedMeal.totalCarbs.toInt()))
-//                            onboardingViewModel.updateCompletedFat((completedFat.toInt() - removedMeal.totalFat.toInt()))
+
+                            onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) - removedMeal.totalCalorie.toInt()))
+                            onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - removedMeal.totalProtein.toInt()))
+                            onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - removedMeal.totalCarbs.toInt()))
+                            onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - removedMeal.totalFat.toInt()))
+
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedCalorie = onboardingViewModel.getCompletedCalorie()
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedProtein = onboardingViewModel.getCompletedProtein()
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedCarbs = onboardingViewModel.getCompletedCarbs()
+                            }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                delay(1000)
+                                completedFat = onboardingViewModel.getCompletedFat()
+                            }
                         }
                     )
                 }
