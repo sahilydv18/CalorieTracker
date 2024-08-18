@@ -1,6 +1,5 @@
 package com.example.calorietracker.ui.screens
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -306,7 +305,6 @@ fun MealAddingScreen(
     }
 
     if (showDialog) {
-        Log.d("Dialog", ingredientToAdd.toString())
         IngredientAddingScreen(
             dismissDialog = {
                 showDialog = false
@@ -327,10 +325,8 @@ fun MealAddingScreen(
                     mealIngredients.remove(ingredientToAdd.toIngredientItem())          // removing the old ingredient
 
                     // updating the nutritional values for meal when ingredient is updated, subtracting the calories of previous ingredient
-                    totalCalorie =
-                        (totalCalorie.toInt() - ingredientToAdd.calories.toInt()).toString()
-                    totalProtein =
-                        (totalProtein.toInt() - ingredientToAdd.protein.toInt()).toString()
+                    totalCalorie = (totalCalorie.toInt() - ingredientToAdd.calories.toInt()).toString()
+                    totalProtein = (totalProtein.toInt() - ingredientToAdd.protein.toInt()).toString()
                     totalCarbs = (totalCarbs.toInt() - ingredientToAdd.carbs.toInt()).toString()
                     totalFat = (totalFat.toInt() - ingredientToAdd.fat.toInt()).toString()
 

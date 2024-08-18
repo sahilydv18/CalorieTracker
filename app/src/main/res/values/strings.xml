@@ -65,6 +65,8 @@
     <string name="close_expanded_meal">Click here to close the expanded meal</string>
     <string name="bullet_point">\u2022</string>
     <string name="your_meals">Your Meals</string>
+    <string name="delete_meal">Delete Meal</string>
+    <string name="delete_meal_text">Are you sure you want to delete</string>
     <string-array name="quantity_type_list">
         <item>No.</item>
         <item>g</item>

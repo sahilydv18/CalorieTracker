@@ -51,12 +51,14 @@ class DatabaseViewModel @Inject constructor(
         return mealRepo.insertIngredient(ingredientItem.toIngredient())
     }
 
+    // function for updating completed status of a meal
     fun updateMealCompletedStatus(mealId: Int, isCompleted: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             mealRepo.updateMealCompletedStatus(mealId, isCompleted)
         }
     }
 
+    // function for inserting ingredients for a meal
     fun insertIngredientsForMeal(meal: Meal, mealIngredients: List<IngredientItem>) {
         viewModelScope.launch(Dispatchers.IO) {
             coroutineScope {
@@ -77,6 +79,22 @@ class DatabaseViewModel @Inject constructor(
                         )
                     )
                 }
+            }
+        }
+    }
+
+    // function for deleting meal and ingredients for a meal
+    fun deleteMealAndIngredientsForMeal(meal: Meal, ingredients: List<Ingredient>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // first deleting all the meal and ingredients for a meal linkage form the MealIngredients table
+            mealRepo.deleteIngredientsForMeal(mealId = meal.mealID)
+
+            // then deleting the meal from Meal table
+            mealRepo.deleteMeal(meal)
+
+            // then deleting all the ingredients for a meal from Ingredient table
+            ingredients.forEach {
+                mealRepo.deleteIngredient(it)
             }
         }
     }

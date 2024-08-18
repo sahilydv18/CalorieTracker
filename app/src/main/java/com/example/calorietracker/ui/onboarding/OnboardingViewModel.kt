@@ -223,52 +223,28 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    // functions to get and update completed calories
-//    suspend fun getCompletedCalorie(): String {
-//        return withContext(Dispatchers.IO) {
-//            preferencesRepo.getCompletedCalorie()
-//        }
-//    }
-
+    // functions to get completed calories
     fun updateCompletedCalorie(completedCalorie: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             preferencesRepo.updateCompletedCalorie(completedCalorie)
         }
     }
 
-//    // functions to get and update completed protein
-//    suspend fun getCompletedProtein(): String {
-//        return withContext(Dispatchers.IO) {
-//            preferencesRepo.getCompletedProtein()
-//        }
-//    }
-
+    // functions to get completed protein
     fun updateCompletedProtein(completedProtein: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             preferencesRepo.updateCompletedProtein(completedProtein)
         }
     }
 
-//    // functions to get and update completed carbs
-//    suspend fun getCompletedCarbs(): String {
-//        return withContext(Dispatchers.IO) {
-//            preferencesRepo.getCompletedCarbs()
-//        }
-//    }
-
+    // functions to get completed carbs
     fun updateCompletedCarbs(completedCarbs: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             preferencesRepo.updateCompletedCarbs(completedCarbs)
         }
     }
 
-//    // functions to get and update completed fat
-//    suspend fun getCompletedFat(): String {
-//        return withContext(Dispatchers.IO) {
-//            preferencesRepo.getCompletedFat()
-//        }
-//    }
-
+    // functions to get and update completed fat
     fun updateCompletedFat(completedFat: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             preferencesRepo.updateCompletedFat(completedFat)

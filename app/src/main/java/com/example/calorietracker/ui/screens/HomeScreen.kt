@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -34,11 +35,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -50,7 +53,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,26 +95,49 @@ fun HomeScreen(
     val coroutineScope = rememberCoroutineScope()
 
     /*TODO("Update the getting of these 5 values like the completedCalorie ones")*/
+
+    // state variable for showing name of the user
     var name by rememberSaveable {
         mutableStateOf("")
     }
+    // state variable for showing total calories goal of the user
     var calorie by rememberSaveable {
         mutableStateOf("")
     }
+    // state variable for showing total protein goal of the user
     var protein by rememberSaveable {
         mutableStateOf("")
     }
+    // state variable for showing total carbs goal of the user
     var carbs by rememberSaveable {
         mutableStateOf("")
     }
+    // state variable for showing total fat goal of the user
     var fat by rememberSaveable {
         mutableStateOf("")
     }
 
+    // state variable for showing completed calories by the user
     val completedCalorie by onboardingViewModel.completedCalorie.collectAsState()
+    // state variable for showing completed protein by the user
     val completedProtein by onboardingViewModel.completedProtein.collectAsState()
+    // state variable for showing completed carbs by the user
     val completedCarbs by onboardingViewModel.completedCarbs.collectAsState()
+    // state variable for showing completed fat by the user
     val completedFat by onboardingViewModel.completedFat.collectAsState()
+
+    // state variable for showing alert dialog when deleting a meal
+    var showDeleteAlertDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+    // state variable for getting meal that the user wants to delete
+    var mealToDelete by remember {
+        mutableStateOf<Meal?>(null)
+    }
+    // state variable for getting ingredients that the user wants to delete
+    var ingredientsForMealToDelete by remember {
+        mutableStateOf<List<Ingredient>?>(null)
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -287,9 +312,58 @@ fun HomeScreen(
                             onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - removedMeal.totalProtein.toInt()))
                             onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - removedMeal.totalCarbs.toInt()))
                             onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - removedMeal.totalFat.toInt()))
+                        },
+                        onDeleteButtonClicked = { deletedMeal, deletedIngredients ->
+                            showDeleteAlertDialog = true
+                            mealToDelete = deletedMeal
+                            ingredientsForMealToDelete = deletedIngredients
                         }
                     )
                 }
+            }
+            if (showDeleteAlertDialog) {
+                // alert dialog for confirming that the user wants to delete the meal or not
+                AlertDialog(
+                    onDismissRequest = {},
+                    confirmButton = {
+                        Row {
+                            // cancel button
+                            TextButton(
+                                onClick = {
+                                    showDeleteAlertDialog = false
+                                    mealToDelete = null
+                                    ingredientsForMealToDelete = null
+                                }
+                            ) {
+                                Text(text = stringResource(id = R.string.cancel))
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            // delete button
+                            TextButton(onClick = {
+                                mealToDelete?.let { meal ->
+                                    ingredientsForMealToDelete?.let { ingredients ->
+                                        databaseViewModel.deleteMealAndIngredientsForMeal(meal = meal, ingredients = ingredients)
+                                    }
+                                }
+                                onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) - (mealToDelete?.totalCalorie?.toInt() ?: 0)))
+                                onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - (mealToDelete?.totalProtein?.toInt() ?: 0)))
+                                onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - (mealToDelete?.totalCarbs?.toInt() ?: 0)))
+                                onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - (mealToDelete?.totalFat?.toInt() ?: 0)))
+                                showDeleteAlertDialog = false
+                                mealToDelete = null
+                                ingredientsForMealToDelete = null
+                            }) {
+                                Text(text = stringResource(id = R.string.delete))
+                            }
+                        }
+                    },
+                    text = {
+                        Text(text = stringResource(id = R.string.delete_meal_text) + " ${mealToDelete?.mealName}?")
+                    },
+                    title = {
+                        Text(text = stringResource(id = R.string.delete_meal))
+                    }
+                )
             }
         }
     }
@@ -380,7 +454,8 @@ fun MealCard(
     meal: Meal,
     ingredients: List<Ingredient>,
     onMealCompleted: (Meal) -> Unit,
-    onMealRemovedFromCompleted: (Meal) -> Unit
+    onMealRemovedFromCompleted: (Meal) -> Unit,
+    onDeleteButtonClicked: (Meal, List<Ingredient>) -> Unit
 ) {
     // state variable for check box
     var isChecked by rememberSaveable {
@@ -415,7 +490,7 @@ fun MealCard(
                 Modifier.weight(1f)
                 Row {
                     // delete button
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { onDeleteButtonClicked(meal,ingredients) }) {
                         Image(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(id = R.string.delete),
@@ -642,38 +717,4 @@ fun MealNutritionalInfo(
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MealCardPreview() {
-    MealCard(
-        meal = Meal(
-            mealName = "Breakfast",
-            totalCalorie = "880",
-            totalProtein = "60",
-            totalFat = "25",
-            totalCarbs = "120"
-        ),
-        ingredients = listOf(
-            Ingredient(
-                name = "Milk",
-                quantity = "500 ml",
-                calories = "500",
-                protein = "60",
-                carbs = "80",
-                fat = "15",
-            ),
-            Ingredient(
-                name = "Banana",
-                quantity = "2 No.",
-                calories = "200",
-                protein = "6",
-                carbs = "20",
-                fat = "2",
-            )
-        ),
-        onMealCompleted = {},
-        onMealRemovedFromCompleted = {}
-    )
 }
