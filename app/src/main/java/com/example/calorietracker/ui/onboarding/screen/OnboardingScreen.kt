@@ -56,7 +56,6 @@ fun OnboardingScreen(
         }
         composable(Screens.HOME_SCREEN.name) {
             HomeScreen(
-                modifier,
                 onAddButtonClicked = {
                     navController.navigate(Screens.MEAL_ADD_SCREEN.name)
                 },

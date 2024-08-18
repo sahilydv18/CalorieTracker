@@ -84,12 +84,10 @@ import java.util.Calendar
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
     onboardingViewModel: OnboardingViewModel,
     databaseViewModel: DatabaseViewModel,
     onAddButtonClicked: () -> Unit
 ) {
-
     val mealUiState = databaseViewModel.mealUiState.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
@@ -151,7 +149,7 @@ fun HomeScreen(
         containerColor = if (isSystemInDarkTheme()) backgroundDark else backgroundLight
     ) { innerPadding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
@@ -321,6 +319,7 @@ fun HomeScreen(
                     )
                 }
             }
+
             if (showDeleteAlertDialog) {
                 // alert dialog for confirming that the user wants to delete the meal or not
                 AlertDialog(
@@ -369,6 +368,7 @@ fun HomeScreen(
     }
 }
 
+// composable for showing nutritional goal in graphic format using circular progress indicator
 @Composable
 private fun NutritionalProgressIndicators(
     completedValue: Float,
@@ -396,6 +396,7 @@ private fun NutritionalProgressIndicators(
     )
 }
 
+// composable for showing nutritional goals of the user
 @SuppressLint("DefaultLocale")
 @Composable
 private fun NutritionalInfo(
@@ -449,6 +450,7 @@ private fun GreetingText(name: String, modifier: Modifier = Modifier) {
     )
 }
 
+// composable for showing a meal
 @Composable
 fun MealCard(
     meal: Meal,
@@ -652,6 +654,7 @@ fun MealCard(
     }
 }
 
+// composable for showing nutrient nutritional info
 @Composable
 fun IngredientNutritionalInfo(
     value: String,
@@ -684,6 +687,7 @@ fun IngredientNutritionalInfo(
     }
 }
 
+// composable for showing meal nutritional info
 @Composable
 fun MealNutritionalInfo(
     value: String,

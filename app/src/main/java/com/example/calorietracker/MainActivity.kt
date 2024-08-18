@@ -62,7 +62,6 @@ class MainActivity : ComponentActivity() {
                     } else {
                         AppScreen(
                             navController = navController,
-                            innerPadding = innerPadding,
                             databaseViewModel = databaseViewModel,
                             onboardingViewModel = onboardingViewModel
                         )
