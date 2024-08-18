@@ -279,19 +279,25 @@ fun HomeScreen(
             }
 
             if (mealUiState.value.meals.isEmpty()) {
-                Text(text = "Click on the '+' to add meals")
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.empty_meal_list)
+                    )
+                }
             } else {
                 Text(
                     text = stringResource(id = R.string.your_meals),
                     fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                     fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
                     modifier = Modifier
-                        .align(Alignment.Start)
                         .padding(start = 16.dp),
                     color = if (isSystemInDarkTheme()) primaryDark else primaryLight
                 )
             }
-
 
             Column {
                 mealUiState.value.meals.forEach { meal ->
@@ -349,10 +355,20 @@ fun HomeScreen(
                                         databaseViewModel.deleteMealAndIngredientsForMeal(meal = meal, ingredients = ingredients)
                                     }
                                 }
-                                onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) - (mealToDelete?.totalCalorie?.toInt() ?: 0)))
-                                onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - (mealToDelete?.totalProtein?.toInt() ?: 0)))
-                                onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - (mealToDelete?.totalCarbs?.toInt() ?: 0)))
-                                onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - (mealToDelete?.totalFat?.toInt() ?: 0)))
+
+                                if ((completedCalorie.toIntOrNull() ?: 0) != 0) {
+                                    onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) - (mealToDelete?.totalCalorie?.toInt() ?: 0)))
+                                }
+                                if ((completedProtein.toIntOrNull() ?: 0) != 0) {
+                                    onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - (mealToDelete?.totalProtein?.toInt() ?: 0)))
+                                }
+                                if ((completedCarbs.toIntOrNull() ?: 0) != 0) {
+                                    onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - (mealToDelete?.totalCarbs?.toInt() ?: 0)))
+                                }
+                                if ((completedFat.toIntOrNull() ?: 0) != 0) {
+                                    onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - (mealToDelete?.totalFat?.toInt() ?: 0)))
+                                }
+
                                 showDeleteAlertDialog = false
                                 mealToDelete = null
                                 ingredientsForMealToDelete = null

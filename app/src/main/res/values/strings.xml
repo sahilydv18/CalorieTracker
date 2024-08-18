@@ -67,6 +67,7 @@
     <string name="your_meals">Your Meals</string>
     <string name="delete_meal">Delete Meal</string>
     <string name="delete_meal_text">Are you sure you want to delete</string>
+    <string name="empty_meal_list">Click on \'+\' to add meals</string>
     <string-array name="quantity_type_list">
         <item>No.</item>
         <item>g</item>
