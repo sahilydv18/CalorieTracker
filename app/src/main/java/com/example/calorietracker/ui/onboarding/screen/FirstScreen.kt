@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
@@ -42,6 +41,7 @@ import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 // first screen for the onboarding process
 @Composable
 fun FirstScreen(
+    modifier: Modifier,
     onNextButtonClicked: () -> Unit = {},
     onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
@@ -64,7 +64,7 @@ fun FirstScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(
                 state = rememberScrollState()
@@ -187,10 +187,4 @@ fun FirstScreen(
             }
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun FirstScreenPreview() {
-    FirstScreen()
 }

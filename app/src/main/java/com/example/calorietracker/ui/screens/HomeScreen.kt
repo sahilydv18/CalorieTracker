@@ -278,15 +278,20 @@ fun HomeScreen(
                 }
             }
 
-            Text(
-                text = stringResource(id = R.string.your_meals),
-                fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(start = 16.dp),
-                color = if (isSystemInDarkTheme()) primaryDark else primaryLight
-            )
+            if (mealUiState.value.meals.isEmpty()) {
+                Text(text = "Click on the '+' to add meals")
+            } else {
+                Text(
+                    text = stringResource(id = R.string.your_meals),
+                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                    fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(start = 16.dp),
+                    color = if (isSystemInDarkTheme()) primaryDark else primaryLight
+                )
+            }
+
 
             Column {
                 mealUiState.value.meals.forEach { meal ->

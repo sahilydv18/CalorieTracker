@@ -21,10 +21,6 @@ class OnboardingViewModel @Inject constructor(
     private val _shouldShowOnboardingScreen = MutableStateFlow(false)
     val shouldShowOnboardingScreen = _shouldShowOnboardingScreen.asStateFlow()
 
-    // NOTE : this is a temporary solution, fix it when you use database to store meals
-    // a list made to control the showing of splash screen, it will contain the value from data store preferences file
-    val conditionForSplashScreen: MutableList<Boolean> = mutableListOf()
-
     // variable for getting the completed calorie value from data store, using flow to observe changes
     private val _completedCalorie = MutableStateFlow("")
     val completedCalorie: StateFlow<String> = _completedCalorie.asStateFlow()
@@ -44,9 +40,6 @@ class OnboardingViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _shouldShowOnboardingScreen.value = preferencesRepo.shouldShowOnboardingScreen()
-            // NOTE : this is a temporary solution, fix it when you use database to store meals
-            // adding the value from data store preferences about whether to show onboarding screen or not in the list to use it to control the splash screen
-            conditionForSplashScreen.add(_shouldShowOnboardingScreen.value)
         }
 
         viewModelScope.launch {

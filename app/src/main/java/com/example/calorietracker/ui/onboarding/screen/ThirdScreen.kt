@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
@@ -45,6 +44,7 @@ import kotlinx.coroutines.launch
 // third screen for onboarding process
 @Composable
 fun ThirdScreen(
+    modifier: Modifier,
     onFinishButtonClicked: () -> Unit = {},
     onPreviousButtonClicked: () -> Unit = {},
     onboardingViewModel: OnboardingViewModel = hiltViewModel()
@@ -177,7 +177,7 @@ fun ThirdScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(
                 state = rememberScrollState()
@@ -303,10 +303,4 @@ fun ThirdScreen(
             }
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun ThirdScreenPreview() {
-    ThirdScreen()
 }

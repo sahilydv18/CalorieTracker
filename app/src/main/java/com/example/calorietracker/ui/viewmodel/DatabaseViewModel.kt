@@ -26,7 +26,8 @@ class DatabaseViewModel @Inject constructor(
     // ui state to store list of meals and showing it on UI
     private val _mealUiState: StateFlow<MealUiState> = mealRepo.getAllMeals().map {
         MealUiState(
-            meals = it
+            meals = it,
+            isMealsDataLoaded = true        // setting the flag to true when data is loaded from room database
         )
     }.stateIn(
         scope = viewModelScope,
@@ -102,7 +103,8 @@ class DatabaseViewModel @Inject constructor(
 
 // data class for storing list of meals
 data class MealUiState(
-    val meals: List<Meal> = emptyList()
+    val meals: List<Meal> = emptyList(),
+    val isMealsDataLoaded: Boolean = false      // added this flag to make sure that meals data is loaded
 )
 
 // data class for adding ingredients, created so that we can use the auto generate functionality of primary key

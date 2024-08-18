@@ -36,7 +36,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
@@ -49,6 +48,7 @@ import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 // second screen for the onboarding process
 @Composable
 fun SecondScreen(
+    modifier: Modifier,
     onNextButtonClicked: () -> Unit = {},
     onPreviousButtonClicked: () -> Unit = {},
     onboardingViewModel: OnboardingViewModel = hiltViewModel()
@@ -96,7 +96,7 @@ fun SecondScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(
                 state = rememberScrollState()
@@ -274,10 +274,4 @@ private fun getPAL(exerciseLevel: String): Double {
         else -> 2.3
     }
     return pal
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun SecondScreenPreview() {
-    SecondScreen()
 }
