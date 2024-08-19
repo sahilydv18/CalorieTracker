@@ -49,4 +49,8 @@ class MealRepoImpl @Inject constructor(
     override suspend fun updateMealCompletedStatus(mealId: Int, isCompleted: Boolean) {
         mealDao.updateMealCompletedStatus(mealId, isCompleted)
     }
+
+    override suspend fun updateMealAndIngredients(updatedMeal: Meal, updatedIngredients: List<Ingredient>, oldIngredients: List<Ingredient>) {
+        mealDao.updateMealAndIngredients(updatedMeal,updatedIngredients, oldIngredients)
+    }
 }

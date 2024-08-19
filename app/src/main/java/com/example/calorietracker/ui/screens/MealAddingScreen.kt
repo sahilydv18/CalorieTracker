@@ -1,6 +1,5 @@
 package com.example.calorietracker.ui.screens
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -31,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -80,28 +80,19 @@ fun MealAddingScreen(
     ingredient: List<Ingredient>?
 ) {
 
-    // State to track edit mode
-    var editMode by remember { mutableStateOf(meal != null) }
-
     // list for showing ingredients that the user adds
     val mealIngredients = remember {
         mutableStateListOf<IngredientItem>()
     }
 
-    ingredient?.forEach {
-        if (!mealIngredients.contains(it.toIngredientItem())) {
-            mealIngredients.add(it.toIngredientItem())
-        }
-    }
-
     // adding ingredient to the list when user is editing a meal
     // using launched effect to make sure that the ingredients are added only once
-//    LaunchedEffect(ingredient, editMode) {
-//        ingredient?.let {
-//            mealIngredients.clear() // Clear any existing ingredients
-//            mealIngredients.addAll(it.map { ingredient -> ingredient.toIngredientItem() })
-//        }
-//    }
+    LaunchedEffect(ingredient) {
+        ingredient?.let {
+            mealIngredients.clear() // Clear any existing ingredients
+            mealIngredients.addAll(it.map { ingredient -> ingredient.toIngredientItem() })
+        }
+    }
 
     // state variable for showing completed calories by the user
     val completedCalorie by onboardingViewModel.completedCalorie.collectAsState()
@@ -200,32 +191,25 @@ fun MealAddingScreen(
                                 )
                             }
 
-                            //editMode = false
-
-                            databaseViewModel.deleteMealAndIngredientsForMeal(
-                                meal = meal,
-                                ingredients = ingredient
-                            )
-
-                            /*TODO("FIX THIS, THE PROBLEM IS THAT WHEN USER DOESN'T EDIT THE INGREDIENTS LIST THEN THE INGREDIENT IS REPLACED
-                               AS WE ARE USING REPLACE STRATEGY FOR ADDING INGREDIENTS SO MAKE SURE THAT FIRST WE DELETE THE INGREDIENT AND THEN
-                               ADD IT OR ANOTHER WAY CAN BE ADD INGREDIENT WITH NEW INGREDIENT ID, ALSO IF WE CHOOSE FIRST WAY THEN FIX THE FOREIGN KEY PROBLEM")*/
-
-                            databaseViewModel.insertMealAndIngredientsForMeal(
-                                meal = Meal(
+                            databaseViewModel.updateMealAndIngredients(
+                                updatedMeal = Meal(
+                                    mealID = meal.mealID,
                                     mealName = mealName,
                                     totalCalorie = totalCalorie,
                                     totalProtein = totalProtein,
                                     totalCarbs = totalCarbs,
                                     totalFat = totalFat
                                 ),
-                                mealIngredients = mealIngredients
+                                updatedIngredients = mealIngredients,
+                                oldIngredients = ingredient
                             )
 
-                            val ingredientList = mealIngredients.toList()
-                            Log.d("Ingredient List", ingredientList.toString())
+                            /*
+                                TODO("HANDLE THE CASE WHEN THE USER EDITS A MEAL AND THE MEAL IS ALREADY COMPLETED,
+                                TRY TO INCREASE THE COMPLETEDCALORIES TO THE UPDATED MEAL CALORIES
+                                OR SETTING THE ISMEALCOMPLETED STATUS OF THE UPDATE MEAL TO FALSE")
+                            */
 
-                            Log.d("Deleting ingredient", ingredient.toString())
                         } else {
                             // adding a new meal
                             databaseViewModel.insertMealAndIngredientsForMeal(

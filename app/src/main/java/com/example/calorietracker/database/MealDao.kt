@@ -5,6 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 // dao for accessing the database
@@ -56,4 +58,53 @@ interface MealDao {
     // function for updating isMealCompleted
     @Query("UPDATE Meal SET isMealCompleted = :isCompleted WHERE mealID = :mealId")
     suspend fun updateMealCompletedStatus(mealId: Int, isCompleted: Boolean)
+
+    // function for updating meal
+    @Update
+    suspend fun updateMeal(meal: Meal)
+
+    // function for updating ingredient
+    @Update
+    suspend fun updateIngredient(ingredient: Ingredient)
+
+    // function to implement the edit functionality
+    @Transaction
+    suspend fun updateMealAndIngredients(
+        updatedMeal: Meal,
+        updatedIngredients: List<Ingredient>,
+        oldIngredients: List<Ingredient>
+    ) {
+        // 1. Delete old MealIngredients entries
+        deleteIngredientsForMeal(updatedMeal.mealID)
+
+        // 2. Update the meal
+        updateMeal(updatedMeal)
+
+        // 4. Insert or update ingredients and create MealIngredients entries
+        updatedIngredients.forEach { ingredient ->
+            val existingIngredient =
+                oldIngredients.find { it.ingredientID == ingredient.ingredientID }
+            if (existingIngredient != null) {
+                // Update existing ingredient
+                updateIngredient(existingIngredient)
+                // Create MealIngredients entry (using existing ingredient ID)
+                insertIngredientsForMeal(
+                    MealIngredients(
+                        updatedMeal.mealID,
+                        existingIngredient.ingredientID
+                    )
+                )
+            } else {
+                // Insert new ingredient (associate with the updated meal ID)
+                val newIngredientId = insertIngredient(ingredient)
+                // Create MealIngredients entry (using new ingredient ID)
+                insertIngredientsForMeal(
+                    MealIngredients(
+                        updatedMeal.mealID,
+                        newIngredientId.toInt()
+                    )
+                )
+            }
+        }
+    }
 }
