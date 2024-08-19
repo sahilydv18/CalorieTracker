@@ -86,7 +86,8 @@ import java.util.Calendar
 fun HomeScreen(
     onboardingViewModel: OnboardingViewModel,
     databaseViewModel: DatabaseViewModel,
-    onAddButtonClicked: () -> Unit
+    onAddButtonClicked: () -> Unit,
+    onEditButtonClicked: (Meal, List<Ingredient>) -> Unit
 ) {
     val mealUiState = databaseViewModel.mealUiState.collectAsState()
 
@@ -326,6 +327,9 @@ fun HomeScreen(
                             showDeleteAlertDialog = true
                             mealToDelete = deletedMeal
                             ingredientsForMealToDelete = deletedIngredients
+                        },
+                        onEditButtonClicked = { editedMeal, editedIngredients ->
+                            onEditButtonClicked(editedMeal,editedIngredients)
                         }
                     )
                 }
@@ -478,7 +482,8 @@ fun MealCard(
     ingredients: List<Ingredient>,
     onMealCompleted: (Meal) -> Unit,
     onMealRemovedFromCompleted: (Meal) -> Unit,
-    onDeleteButtonClicked: (Meal, List<Ingredient>) -> Unit
+    onDeleteButtonClicked: (Meal, List<Ingredient>) -> Unit,
+    onEditButtonClicked: (Meal, List<Ingredient>) -> Unit
 ) {
     // state variable for check box
     var isChecked by rememberSaveable {
@@ -521,7 +526,7 @@ fun MealCard(
                         )
                     }
                     // edit button
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { onEditButtonClicked(meal, ingredients) }) {
                         Image(
                             imageVector = Icons.Default.Edit,
                             contentDescription = stringResource(id = R.string.edit),

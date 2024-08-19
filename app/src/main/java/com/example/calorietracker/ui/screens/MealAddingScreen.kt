@@ -1,5 +1,6 @@
 package com.example.calorietracker.ui.screens
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -30,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +50,7 @@ import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.database.Meal
 import com.example.calorietracker.ui.MealAddingScreenTopAppBar
+import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.theme.backgroundDark
 import com.example.calorietracker.ui.theme.backgroundLight
 import com.example.calorietracker.ui.theme.onPrimaryDark
@@ -71,13 +74,43 @@ fun MealAddingScreen(
     onCancelButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     databaseViewModel: DatabaseViewModel,
-    onAddButtonClicked: () -> Unit
+    onboardingViewModel: OnboardingViewModel,
+    onAddButtonClicked: () -> Unit,
+    meal: Meal?,
+    ingredient: List<Ingredient>?
 ) {
+
+    // State to track edit mode
+    var editMode by remember { mutableStateOf(meal != null) }
 
     // list for showing ingredients that the user adds
     val mealIngredients = remember {
         mutableStateListOf<IngredientItem>()
     }
+
+    ingredient?.forEach {
+        if (!mealIngredients.contains(it.toIngredientItem())) {
+            mealIngredients.add(it.toIngredientItem())
+        }
+    }
+
+    // adding ingredient to the list when user is editing a meal
+    // using launched effect to make sure that the ingredients are added only once
+//    LaunchedEffect(ingredient, editMode) {
+//        ingredient?.let {
+//            mealIngredients.clear() // Clear any existing ingredients
+//            mealIngredients.addAll(it.map { ingredient -> ingredient.toIngredientItem() })
+//        }
+//    }
+
+    // state variable for showing completed calories by the user
+    val completedCalorie by onboardingViewModel.completedCalorie.collectAsState()
+    // state variable for showing completed protein by the user
+    val completedProtein by onboardingViewModel.completedProtein.collectAsState()
+    // state variable for showing completed carbs by the user
+    val completedCarbs by onboardingViewModel.completedCarbs.collectAsState()
+    // state variable for showing completed fat by the user
+    val completedFat by onboardingViewModel.completedFat.collectAsState()
 
     // state variable for showing ingredient adding dialog
     var showDialog by rememberSaveable {
@@ -86,27 +119,27 @@ fun MealAddingScreen(
 
     // state variable for meal name
     var mealName by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(meal?.mealName ?: "")
     }
 
     // state variable for showing total calorie of a meal
     var totalCalorie by rememberSaveable {
-        mutableStateOf("0")
+        mutableStateOf(meal?.totalCalorie ?: "0")
     }
 
     // state variable for showing total protein of a meal
     var totalProtein by rememberSaveable {
-        mutableStateOf("0")
+        mutableStateOf(meal?.totalProtein ?: "0")
     }
 
     // state variable for showing total carbs of a meal
     var totalCarbs by rememberSaveable {
-        mutableStateOf("0")
+        mutableStateOf(meal?.totalCarbs ?: "0")
     }
 
     // state variable for showing total fat of a meal
     var totalFat by rememberSaveable {
-        mutableStateOf("0")
+        mutableStateOf(meal?.totalFat ?: "0")
     }
 
     // state variable for ingredient to add so that I can use it to prepopulate text field while editing the element
@@ -148,16 +181,64 @@ fun MealAddingScreen(
                 // add button
                 Button(
                     onClick = {
-                        databaseViewModel.insertIngredientsForMeal(
-                            meal = Meal(
-                                mealName = mealName,
-                                totalCalorie = totalCalorie,
-                                totalProtein = totalProtein,
-                                totalCarbs = totalCarbs,
-                                totalFat = totalFat
-                            ),
-                            mealIngredients = mealIngredients
-                        )
+                        if (meal != null && ingredient != null) {
+                            // editing an existing meal
+                            if (meal.isMealCompleted) {
+                                onboardingViewModel.updateCompletedCalorie(
+                                    ((completedCalorie.toIntOrNull()
+                                        ?: 0) - meal.totalCalorie.toInt())
+                                )
+                                onboardingViewModel.updateCompletedProtein(
+                                    ((completedProtein.toIntOrNull()
+                                        ?: 0) - meal.totalProtein.toInt())
+                                )
+                                onboardingViewModel.updateCompletedCarbs(
+                                    ((completedCarbs.toIntOrNull() ?: 0) - meal.totalCarbs.toInt())
+                                )
+                                onboardingViewModel.updateCompletedFat(
+                                    ((completedFat.toIntOrNull() ?: 0) - meal.totalFat.toInt())
+                                )
+                            }
+
+                            //editMode = false
+
+                            databaseViewModel.deleteMealAndIngredientsForMeal(
+                                meal = meal,
+                                ingredients = ingredient
+                            )
+
+                            /*TODO("FIX THIS, THE PROBLEM IS THAT WHEN USER DOESN'T EDIT THE INGREDIENTS LIST THEN THE INGREDIENT IS REPLACED
+                               AS WE ARE USING REPLACE STRATEGY FOR ADDING INGREDIENTS SO MAKE SURE THAT FIRST WE DELETE THE INGREDIENT AND THEN
+                               ADD IT OR ANOTHER WAY CAN BE ADD INGREDIENT WITH NEW INGREDIENT ID, ALSO IF WE CHOOSE FIRST WAY THEN FIX THE FOREIGN KEY PROBLEM")*/
+
+                            databaseViewModel.insertMealAndIngredientsForMeal(
+                                meal = Meal(
+                                    mealName = mealName,
+                                    totalCalorie = totalCalorie,
+                                    totalProtein = totalProtein,
+                                    totalCarbs = totalCarbs,
+                                    totalFat = totalFat
+                                ),
+                                mealIngredients = mealIngredients
+                            )
+
+                            val ingredientList = mealIngredients.toList()
+                            Log.d("Ingredient List", ingredientList.toString())
+
+                            Log.d("Deleting ingredient", ingredient.toString())
+                        } else {
+                            // adding a new meal
+                            databaseViewModel.insertMealAndIngredientsForMeal(
+                                meal = Meal(
+                                    mealName = mealName,
+                                    totalCalorie = totalCalorie,
+                                    totalProtein = totalProtein,
+                                    totalCarbs = totalCarbs,
+                                    totalFat = totalFat
+                                ),
+                                mealIngredients = mealIngredients
+                            )
+                        }
                         onAddButtonClicked()
                     },
                     enabled = mealIngredients.isNotEmpty() && mealName.isNotBlank(),
@@ -174,7 +255,9 @@ fun MealAddingScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = stringResource(id = R.string.add),
+                            text = if (meal != null) stringResource(id = R.string.save) else stringResource(
+                                id = R.string.add
+                            ),
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
@@ -325,8 +408,10 @@ fun MealAddingScreen(
                     mealIngredients.remove(ingredientToAdd.toIngredientItem())          // removing the old ingredient
 
                     // updating the nutritional values for meal when ingredient is updated, subtracting the calories of previous ingredient
-                    totalCalorie = (totalCalorie.toInt() - ingredientToAdd.calories.toInt()).toString()
-                    totalProtein = (totalProtein.toInt() - ingredientToAdd.protein.toInt()).toString()
+                    totalCalorie =
+                        (totalCalorie.toInt() - ingredientToAdd.calories.toInt()).toString()
+                    totalProtein =
+                        (totalProtein.toInt() - ingredientToAdd.protein.toInt()).toString()
                     totalCarbs = (totalCarbs.toInt() - ingredientToAdd.carbs.toInt()).toString()
                     totalFat = (totalFat.toInt() - ingredientToAdd.fat.toInt()).toString()
 
