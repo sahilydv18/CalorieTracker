@@ -486,8 +486,13 @@ fun MealCard(
     onEditButtonClicked: (Meal, List<Ingredient>) -> Unit
 ) {
     // state variable for check box
-    var isChecked by rememberSaveable {
+    var isChecked by remember {
         mutableStateOf(meal.isMealCompleted)
+    }
+
+    // using launched effect to trigger recomposition after editing a meal
+    LaunchedEffect(meal.isMealCompleted) {
+        isChecked = meal.isMealCompleted
     }
 
     // state variable for showing ingredients

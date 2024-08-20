@@ -176,12 +176,10 @@ fun MealAddingScreen(
                             // editing an existing meal
                             if (meal.isMealCompleted) {
                                 onboardingViewModel.updateCompletedCalorie(
-                                    ((completedCalorie.toIntOrNull()
-                                        ?: 0) - meal.totalCalorie.toInt())
+                                    ((completedCalorie.toIntOrNull() ?: 0) - meal.totalCalorie.toInt())
                                 )
                                 onboardingViewModel.updateCompletedProtein(
-                                    ((completedProtein.toIntOrNull()
-                                        ?: 0) - meal.totalProtein.toInt())
+                                    ((completedProtein.toIntOrNull() ?: 0) - meal.totalProtein.toInt())
                                 )
                                 onboardingViewModel.updateCompletedCarbs(
                                     ((completedCarbs.toIntOrNull() ?: 0) - meal.totalCarbs.toInt())
@@ -198,18 +196,12 @@ fun MealAddingScreen(
                                     totalCalorie = totalCalorie,
                                     totalProtein = totalProtein,
                                     totalCarbs = totalCarbs,
-                                    totalFat = totalFat
+                                    totalFat = totalFat,
+                                    isMealCompleted = false
                                 ),
                                 updatedIngredients = mealIngredients,
                                 oldIngredients = ingredient
                             )
-
-                            /*
-                                TODO("HANDLE THE CASE WHEN THE USER EDITS A MEAL AND THE MEAL IS ALREADY COMPLETED,
-                                TRY TO INCREASE THE COMPLETEDCALORIES TO THE UPDATED MEAL CALORIES
-                                OR SETTING THE ISMEALCOMPLETED STATUS OF THE UPDATE MEAL TO FALSE")
-                            */
-
                         } else {
                             // adding a new meal
                             databaseViewModel.insertMealAndIngredientsForMeal(
