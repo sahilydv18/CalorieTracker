@@ -40,6 +40,9 @@ fun AppScreen(
                     mealToEdit = editedMeal
                     ingredientsForMealToEdit = editedIngredients
                     navController.navigate(Screens.MEAL_ADD_SCREEN.name)
+                },
+                onScreenChanged = { screen ->
+                    navController.navigate(screen.name)
                 }
             )
         }
@@ -64,6 +67,13 @@ fun AppScreen(
                 meal = mealToEdit,
                 onboardingViewModel = onboardingViewModel,
                 ingredient = ingredientsForMealToEdit
+            )
+        }
+        composable(Screens.ACCOUNT_SCREEN.name) {
+            SettingsScreen(
+                onScreenChanged = { screen ->
+                    navController.navigate(screen.name)
+                }
             )
         }
     }

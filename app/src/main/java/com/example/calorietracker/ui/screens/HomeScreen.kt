@@ -59,7 +59,9 @@ import androidx.compose.ui.unit.sp
 import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.database.Meal
+import com.example.calorietracker.ui.BottomNavBar
 import com.example.calorietracker.ui.HomeScreenFAB
+import com.example.calorietracker.ui.Screens
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.theme.backgroundDark
 import com.example.calorietracker.ui.theme.backgroundLight
@@ -87,7 +89,8 @@ fun HomeScreen(
     onboardingViewModel: OnboardingViewModel,
     databaseViewModel: DatabaseViewModel,
     onAddButtonClicked: () -> Unit,
-    onEditButtonClicked: (Meal, List<Ingredient>) -> Unit
+    onEditButtonClicked: (Meal, List<Ingredient>) -> Unit,
+    onScreenChanged: (Screens) -> Unit
 ) {
     val mealUiState = databaseViewModel.mealUiState.collectAsState()
 
@@ -147,7 +150,15 @@ fun HomeScreen(
                 }
             )
         },
-        containerColor = if (isSystemInDarkTheme()) backgroundDark else backgroundLight
+        containerColor = if (isSystemInDarkTheme()) backgroundDark else backgroundLight,
+        bottomBar = {
+            BottomNavBar(
+                selectedScreen = 0,
+                onScreenChanged = { screen ->
+                    onScreenChanged(screen)
+                }
+            )
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier

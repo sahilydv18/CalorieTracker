@@ -15,6 +15,7 @@ import com.example.calorietracker.ui.Screens
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 import com.example.calorietracker.ui.screens.HomeScreen
 import com.example.calorietracker.ui.screens.MealAddingScreen
+import com.example.calorietracker.ui.screens.SettingsScreen
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 
 // implementing onboarding screen using navigation
@@ -81,6 +82,9 @@ fun OnboardingScreen(
                     mealToEdit = editedMeal
                     ingredientsForMealToEdit = editedIngredients
                     navController.navigate(Screens.MEAL_ADD_SCREEN.name)
+                },
+                onScreenChanged = { screen ->
+                    navController.navigate(screen.name)
                 }
             )
         }
@@ -105,6 +109,13 @@ fun OnboardingScreen(
                 meal = mealToEdit,
                 ingredient = ingredientsForMealToEdit,
                 onboardingViewModel = onboardingViewModel
+            )
+        }
+        composable(Screens.ACCOUNT_SCREEN.name) {
+            SettingsScreen(
+                onScreenChanged = { screen ->
+                    navController.navigate(screen.name)
+                }
             )
         }
     }

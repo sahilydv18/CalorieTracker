@@ -5,5 +5,6 @@ enum class Screens {
     SECOND_SCREEN,
     THIRD_SCREEN,
     HOME_SCREEN,
-    MEAL_ADD_SCREEN
+    MEAL_ADD_SCREEN,
+    ACCOUNT_SCREEN
 }
