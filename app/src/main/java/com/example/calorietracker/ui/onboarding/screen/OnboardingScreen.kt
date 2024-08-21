@@ -153,7 +153,18 @@ fun OnboardingScreen(
             )
         }
         composable(Screens.EDIT_NUTRITIONAL_INFO_SCREEN.name) {
-            NutritionalInfoEditScreen()
+            NutritionalInfoEditScreen(
+                onBackButtonClicked = {
+                    navController.popBackStack()
+                },
+                onCancelButtonClicked = {
+                    navController.popBackStack()
+                },
+                onboardingViewModel = onboardingViewModel,
+                onSaveButtonClicked = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
