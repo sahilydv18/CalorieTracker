@@ -421,9 +421,9 @@ private fun NutritionalProgressIndicators(
     CircularProgressIndicator(
         progress = {
             if (totalValue.isNullOrEmpty()) {
-                (animatedProgress / 1F)
+                animatedProgress /1F
             } else {
-                (animatedProgress / totalValue.toFloat())
+                animatedProgress / (totalValue.toFloatOrNull() ?: 1F)
             }
         },
         color = color,

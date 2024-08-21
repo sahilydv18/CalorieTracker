@@ -264,7 +264,7 @@ fun SecondScreen(
 }
 
 // function to get PAL(Physical Activity Level) using the exercise level selected by the user
-private fun getPAL(exerciseLevel: String): Double {
+fun getPAL(exerciseLevel: String): Double {
     val pal = when(exerciseLevel) {
         "Sedentary lifestyle (little or no exercise)" -> 1.2
         "Slightly active lifestyle (light exercise/sports 1–2 days/week)" -> 1.4

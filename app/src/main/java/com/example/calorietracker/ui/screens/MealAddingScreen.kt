@@ -151,9 +151,12 @@ fun MealAddingScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MealAddingScreenTopAppBar {
-                onBackButtonClicked()
-            }
+            MealAddingScreenTopAppBar(
+                onBackButtonClicked = {
+                    onBackButtonClicked()
+                },
+                title = if (meal != null) R.string.edit_meal else R.string.meal
+            )
         },
         bottomBar = {
             // conformation and cancellation buttons

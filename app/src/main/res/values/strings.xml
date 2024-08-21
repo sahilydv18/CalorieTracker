@@ -71,6 +71,13 @@
     <string name="save">Save</string>
     <string name="home">Home</string>
     <string name="settings">Settings</string>
+    <string name="edit_personal_info">Edit your personal information</string>
+    <string name="edit_personal_info_supporting_text">Update your name, age, gender and other personal details.</string>
+    <string name="edit_biometric_info">Edit your biometric information</string>
+    <string name="edit_biometric_info_supporting_text">Update your height, weight and other biometric data.</string>
+    <string name="edit_nutritional_info">Edit your nutritional information</string>
+    <string name="edit_nutritional_info_supporting_text">Update your dietary preferences and nutritional information.</string>
+    <string name="edit_meal">Edit Meal</string>
     <string-array name="quantity_type_list">
         <item>No.</item>
         <item>g</item>

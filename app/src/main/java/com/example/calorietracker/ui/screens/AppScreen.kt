@@ -12,6 +12,9 @@ import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.database.Meal
 import com.example.calorietracker.ui.Screens
 import com.example.calorietracker.ui.onboarding.OnboardingViewModel
+import com.example.calorietracker.ui.screens.editing.BiometricInfoEditScreen
+import com.example.calorietracker.ui.screens.editing.NutritionalInfoEditScreen
+import com.example.calorietracker.ui.screens.editing.PersonalInfoEditScreen
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
 
 @Composable
@@ -73,8 +76,42 @@ fun AppScreen(
             SettingsScreen(
                 onScreenChanged = { screen ->
                     navController.navigate(screen.name)
+                },
+                onEditButtonClicked = { screen ->
+                    navController.navigate(screen.name)
                 }
             )
+        }
+        composable(Screens.EDIT_PERSONAL_INFO_SCREEN.name) {
+            PersonalInfoEditScreen(
+                onBackButtonClicked = {
+                    navController.popBackStack()
+                },
+                onCancelButtonClicked = {
+                    navController.popBackStack()
+                },
+                onboardingViewModel = onboardingViewModel,
+                onSaveButtonClicked = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screens.EDIT_BIOMETRIC_INFO_SCREEN.name) {
+            BiometricInfoEditScreen(
+                onBackButtonClicked = {
+                    navController.popBackStack()
+                },
+                onCancelButtonClicked = {
+                    navController.popBackStack()
+                },
+                onboardingViewModel = onboardingViewModel,
+                onSaveButtonClicked = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screens.EDIT_NUTRITIONAL_INFO_SCREEN.name) {
+            NutritionalInfoEditScreen()
         }
     }
 }
