@@ -96,8 +96,6 @@ fun HomeScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    /*TODO("Update the getting of these 5 values like the completedCalorie ones")*/
-
     // state variable for showing name of the user
     var name by rememberSaveable {
         mutableStateOf("")
