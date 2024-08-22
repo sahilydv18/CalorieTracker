@@ -87,7 +87,12 @@ fun OnboardingScreen(
                     navController.navigate(Screens.MEAL_ADD_SCREEN.name)
                 },
                 onScreenChanged = { screen ->
-                    navController.navigate(screen.name)
+                    navController.navigate(screen.name) {
+                        popUpTo(Screens.HOME_SCREEN.name) {
+                            inclusive = true
+                            saveState = false
+                        }
+                    }
                 }
             )
         }
@@ -114,10 +119,15 @@ fun OnboardingScreen(
                 onboardingViewModel = onboardingViewModel
             )
         }
-        composable(Screens.ACCOUNT_SCREEN.name) {
+        composable(Screens.SETTINGS_SCREEN.name) {
             SettingsScreen(
                 onScreenChanged = { screen ->
-                    navController.navigate(screen.name)
+                    navController.navigate(screen.name) {
+                        popUpTo(Screens.SETTINGS_SCREEN.name) {
+                            inclusive = true
+                            saveState = false
+                        }
+                    }
                 },
                 onEditButtonClicked = { screen ->
                     navController.navigate(screen.name)

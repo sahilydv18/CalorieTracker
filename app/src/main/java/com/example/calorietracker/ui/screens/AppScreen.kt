@@ -77,11 +77,11 @@ fun AppScreen(
                 ingredient = ingredientsForMealToEdit
             )
         }
-        composable(Screens.ACCOUNT_SCREEN.name) {
+        composable(Screens.SETTINGS_SCREEN.name) {
             SettingsScreen(
                 onScreenChanged = { screen ->
                     navController.navigate(screen.name) {
-                        popUpTo(Screens.ACCOUNT_SCREEN.name) {
+                        popUpTo(Screens.SETTINGS_SCREEN.name) {
                             inclusive = true
                             saveState = false
                         }

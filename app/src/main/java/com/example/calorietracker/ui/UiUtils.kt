@@ -108,7 +108,7 @@ fun BottomNavBar(
 
     val items = listOf(
         Screens.HOME_SCREEN,
-        Screens.ACCOUNT_SCREEN
+        Screens.SETTINGS_SCREEN
     )
 
     val selectedIcon = listOf(
