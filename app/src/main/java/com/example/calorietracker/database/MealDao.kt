@@ -107,4 +107,8 @@ interface MealDao {
             }
         }
     }
+
+    // function for resetting isMealCompleted status to false after midnight
+    @Query("UPDATE Meal SET isMealCompleted = 0")
+    suspend fun resetMealCompletionStatus()
 }

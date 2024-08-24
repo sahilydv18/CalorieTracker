@@ -62,6 +62,9 @@ dependencies {
 
     // dagger-hilt
     implementation("com.google.dagger:hilt-android:2.46")
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
     kapt("com.google.dagger:hilt-android-compiler:2.46")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
@@ -80,6 +83,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // work manager
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
