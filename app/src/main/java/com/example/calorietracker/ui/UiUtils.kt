@@ -6,6 +6,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -50,7 +51,8 @@ fun HomeScreenFAB(
     FloatingActionButton(
         onClick = { onAddButtonClicked() },
         containerColor = if (isSystemInDarkTheme()) secondaryContainerDark else secondaryContainerLight,
-        contentColor = if (isSystemInDarkTheme()) onSecondaryContainerDark else onSecondaryContainerLight
+        contentColor = if (isSystemInDarkTheme()) onSecondaryContainerDark else onSecondaryContainerLight,
+        shape = CircleShape
     ) {
         Icon(
             imageVector = Icons.Filled.Add,

@@ -12,13 +12,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -30,12 +34,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -84,6 +91,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onboardingViewModel: OnboardingViewModel,
@@ -139,6 +147,9 @@ fun HomeScreen(
         mutableStateOf<List<Ingredient>?>(null)
     }
 
+    // getting the status bar height using window insets
+    val systemBarsPadding = WindowInsets.systemBars.asPaddingValues()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
@@ -155,6 +166,17 @@ fun HomeScreen(
                 onScreenChanged = { screen ->
                     onScreenChanged(screen)
                 }
+            )
+        },
+        topBar = {
+            TopAppBar(
+                title = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(systemBarsPadding.calculateTopPadding()),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = if (isSystemInDarkTheme()) tertiaryContainerDark else tertiaryContainerLight
+                )
             )
         }
     ) { innerPadding ->
@@ -191,39 +213,42 @@ fun HomeScreen(
                 }
             }
 
-            GreetingText(
-                name = name,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = if (isSystemInDarkTheme()) {
                         tertiaryContainerDark
                     } else {
                         tertiaryContainerLight
                     }
-                )
+                ),
+                shape = RoundedCornerShape(
+                    topEnd = 0.dp,
+                    topStart = 0.dp,
+                    bottomStart = 20.dp,
+                    bottomEnd = 20.dp
+                ),
+                modifier = Modifier.padding(bottom = 16.dp)
             ) {
+                GreetingText(
+                    name = name,
+                    modifier = Modifier.align(Alignment.Start)
+                )
+
                 Row(
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth()
                 ) {
                     Box(
-                        Modifier.align(Alignment.CenterVertically)
+                        Modifier.align(Alignment.CenterVertically).padding(16.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         NutritionalProgressIndicators(
                             completedValue = completedCalorie.toFloatOrNull() ?: 0F,
                             totalValue = calorie,
                             color = Color(3, 252, 40),
                             modifier = Modifier
-                                .size(180.dp)
+                                .size(200.dp)
                                 .align(Alignment.Center)
                         )
                         NutritionalProgressIndicators(
@@ -231,7 +256,7 @@ fun HomeScreen(
                             totalValue = protein,
                             color = Color(254, 177, 24),
                             modifier = Modifier
-                                .size(150.dp)
+                                .size(165.dp)
                                 .align(Alignment.Center)
                         )
                         NutritionalProgressIndicators(
@@ -239,7 +264,7 @@ fun HomeScreen(
                             totalValue = carbs,
                             color = Color(241, 255, 24),
                             modifier = Modifier
-                                .size(120.dp)
+                                .size(130.dp)
                                 .align(Alignment.Center)
                         )
                         NutritionalProgressIndicators(
@@ -247,7 +272,7 @@ fun HomeScreen(
                             totalValue = fat,
                             color = Color(252, 84, 75),
                             modifier = Modifier
-                                .size(90.dp)
+                                .size(95.dp)
                                 .align(Alignment.Center)
                         )
                     }
@@ -310,27 +335,50 @@ fun HomeScreen(
             }
 
             Column {
-                mealUiState.value.meals.forEach { meal ->
+                mealUiState.value.meals.forEachIndexed { index, meal ->
                     val ingredients by databaseViewModel.getIngredientsForMeal(meal.mealID)
                         .collectAsState(emptyList())
                     MealCard(
+                        modifier = if (index == (mealUiState.value.meals.size - 1)) Modifier.padding(bottom = 88.dp) else Modifier,
                         meal = meal,
                         ingredients = ingredients,
                         onMealCompleted = { completedMeal ->
                             databaseViewModel.updateMealCompletedStatus(completedMeal.mealID, true)
 
-                            onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) + completedMeal.totalCalorie.toInt()))
-                            onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) + completedMeal.totalProtein.toInt()))
-                            onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) + completedMeal.totalCarbs.toInt()))
-                            onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) + completedMeal.totalFat.toInt()))
+                            onboardingViewModel.updateCompletedCalorie(
+                                ((completedCalorie.toIntOrNull()
+                                    ?: 0) + completedMeal.totalCalorie.toInt())
+                            )
+                            onboardingViewModel.updateCompletedProtein(
+                                ((completedProtein.toIntOrNull()
+                                    ?: 0) + completedMeal.totalProtein.toInt())
+                            )
+                            onboardingViewModel.updateCompletedCarbs(
+                                ((completedCarbs.toIntOrNull()
+                                    ?: 0) + completedMeal.totalCarbs.toInt())
+                            )
+                            onboardingViewModel.updateCompletedFat(
+                                ((completedFat.toIntOrNull() ?: 0) + completedMeal.totalFat.toInt())
+                            )
                         },
                         onMealRemovedFromCompleted = { removedMeal ->
                             databaseViewModel.updateMealCompletedStatus(removedMeal.mealID, false)
 
-                            onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) - removedMeal.totalCalorie.toInt()))
-                            onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - removedMeal.totalProtein.toInt()))
-                            onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - removedMeal.totalCarbs.toInt()))
-                            onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - removedMeal.totalFat.toInt()))
+                            onboardingViewModel.updateCompletedCalorie(
+                                ((completedCalorie.toIntOrNull()
+                                    ?: 0) - removedMeal.totalCalorie.toInt())
+                            )
+                            onboardingViewModel.updateCompletedProtein(
+                                ((completedProtein.toIntOrNull()
+                                    ?: 0) - removedMeal.totalProtein.toInt())
+                            )
+                            onboardingViewModel.updateCompletedCarbs(
+                                ((completedCarbs.toIntOrNull()
+                                    ?: 0) - removedMeal.totalCarbs.toInt())
+                            )
+                            onboardingViewModel.updateCompletedFat(
+                                ((completedFat.toIntOrNull() ?: 0) - removedMeal.totalFat.toInt())
+                            )
                         },
                         onDeleteButtonClicked = { deletedMeal, deletedIngredients ->
                             showDeleteAlertDialog = true
@@ -338,7 +386,7 @@ fun HomeScreen(
                             ingredientsForMealToDelete = deletedIngredients
                         },
                         onEditButtonClicked = { editedMeal, editedIngredients ->
-                            onEditButtonClicked(editedMeal,editedIngredients)
+                            onEditButtonClicked(editedMeal, editedIngredients)
                         }
                     )
                 }
@@ -365,21 +413,36 @@ fun HomeScreen(
                             TextButton(onClick = {
                                 mealToDelete?.let { meal ->
                                     ingredientsForMealToDelete?.let { ingredients ->
-                                        databaseViewModel.deleteMealAndIngredientsForMeal(meal = meal, ingredients = ingredients)
+                                        databaseViewModel.deleteMealAndIngredientsForMeal(
+                                            meal = meal,
+                                            ingredients = ingredients
+                                        )
                                     }
                                 }
 
                                 if ((completedCalorie.toIntOrNull() ?: 0) != 0) {
-                                    onboardingViewModel.updateCompletedCalorie(((completedCalorie.toIntOrNull() ?: 0) - (mealToDelete?.totalCalorie?.toInt() ?: 0)))
+                                    onboardingViewModel.updateCompletedCalorie(
+                                        ((completedCalorie.toIntOrNull()
+                                            ?: 0) - (mealToDelete?.totalCalorie?.toInt() ?: 0))
+                                    )
                                 }
                                 if ((completedProtein.toIntOrNull() ?: 0) != 0) {
-                                    onboardingViewModel.updateCompletedProtein(((completedProtein.toIntOrNull() ?: 0) - (mealToDelete?.totalProtein?.toInt() ?: 0)))
+                                    onboardingViewModel.updateCompletedProtein(
+                                        ((completedProtein.toIntOrNull()
+                                            ?: 0) - (mealToDelete?.totalProtein?.toInt() ?: 0))
+                                    )
                                 }
                                 if ((completedCarbs.toIntOrNull() ?: 0) != 0) {
-                                    onboardingViewModel.updateCompletedCarbs(((completedCarbs.toIntOrNull() ?: 0) - (mealToDelete?.totalCarbs?.toInt() ?: 0)))
+                                    onboardingViewModel.updateCompletedCarbs(
+                                        ((completedCarbs.toIntOrNull()
+                                            ?: 0) - (mealToDelete?.totalCarbs?.toInt() ?: 0))
+                                    )
                                 }
                                 if ((completedFat.toIntOrNull() ?: 0) != 0) {
-                                    onboardingViewModel.updateCompletedFat(((completedFat.toIntOrNull() ?: 0) - (mealToDelete?.totalFat?.toInt() ?: 0)))
+                                    onboardingViewModel.updateCompletedFat(
+                                        ((completedFat.toIntOrNull()
+                                            ?: 0) - (mealToDelete?.totalFat?.toInt() ?: 0))
+                                    )
                                 }
 
                                 showDeleteAlertDialog = false
@@ -418,15 +481,16 @@ private fun NutritionalProgressIndicators(
 
     CircularProgressIndicator(
         progress = {
-            if (totalValue.isNullOrEmpty()) {
-                animatedProgress /1F
+            if (totalValue.isEmpty()) {
+                animatedProgress / 1F
             } else {
                 animatedProgress / (totalValue.toFloatOrNull() ?: 1F)
             }
         },
         color = color,
-        trackColor = Color.White,
-        modifier = modifier
+        trackColor = if (isSystemInDarkTheme()) onTertiaryContainerDark else Color(0xFFF5F5F5),
+        modifier = modifier,
+        strokeWidth = 12.dp
     )
 }
 
@@ -487,6 +551,7 @@ private fun GreetingText(name: String, modifier: Modifier = Modifier) {
 // composable for showing a meal
 @Composable
 fun MealCard(
+    modifier: Modifier,
     meal: Meal,
     ingredients: List<Ingredient>,
     onMealCompleted: (Meal) -> Unit,
@@ -510,7 +575,7 @@ fun MealCard(
     }
 
     Card(
-        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+        modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSystemInDarkTheme()) surfaceVariantDark else surfaceVariantLight
         )
@@ -532,7 +597,7 @@ fun MealCard(
                 Modifier.weight(1f)
                 Row {
                     // delete button
-                    IconButton(onClick = { onDeleteButtonClicked(meal,ingredients) }) {
+                    IconButton(onClick = { onDeleteButtonClicked(meal, ingredients) }) {
                         Image(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(id = R.string.delete),
