@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,14 +19,15 @@ import com.example.calorietracker.ui.screens.editing.BiometricInfoEditScreen
 import com.example.calorietracker.ui.screens.editing.NutritionalInfoEditScreen
 import com.example.calorietracker.ui.screens.editing.PersonalInfoEditScreen
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
+import com.example.calorietracker.ui.viewmodel.IngredientApiViewModel
 
 // implementing onboarding screen using navigation
 @Composable
 fun OnboardingScreen(
-    modifier: Modifier = Modifier,
     navController: NavHostController,
     onboardingViewModel: OnboardingViewModel,
-    databaseViewModel: DatabaseViewModel
+    databaseViewModel: DatabaseViewModel,
+    ingredientApiViewModel: IngredientApiViewModel
 ) {
 
     var mealToEdit by remember {
@@ -43,35 +43,33 @@ fun OnboardingScreen(
     ) {
         composable(Screens.FIRST_SCREEN.name) {
             FirstScreen(
-                modifier = modifier,
                 onNextButtonClicked = {
                     navController.navigate(Screens.SECOND_SCREEN.name)
-                }
+                },
+                onboardingViewModel = onboardingViewModel
             )
         }
         composable(Screens.SECOND_SCREEN.name) {
             SecondScreen(
-                modifier = modifier,
                 onPreviousButtonClicked = {
                     navController.popBackStack()
-                    //navController.navigate(Screens.FIRST_SCREEN.name)
                 },
                 onNextButtonClicked = {
                     navController.navigate(Screens.THIRD_SCREEN.name)
-                }
+                },
+                onboardingViewModel = onboardingViewModel
             )
         }
         composable(Screens.THIRD_SCREEN.name) {
             ThirdScreen(
-                modifier = modifier,
                 onPreviousButtonClicked = {
                     navController.popBackStack()
-                    //navController.navigate(Screens.SECOND_SCREEN.name)
                 },
                 onFinishButtonClicked = {
                     navController.popBackStack(route = Screens.FIRST_SCREEN.name, inclusive = true)
                     navController.navigate(Screens.HOME_SCREEN.name)
-                }
+                },
+                onboardingViewModel = onboardingViewModel
             )
         }
         composable(Screens.HOME_SCREEN.name) {
@@ -116,7 +114,8 @@ fun OnboardingScreen(
                 },
                 meal = mealToEdit,
                 ingredient = ingredientsForMealToEdit,
-                onboardingViewModel = onboardingViewModel
+                onboardingViewModel = onboardingViewModel,
+                ingredientApiViewModel = ingredientApiViewModel
             )
         }
         composable(Screens.SETTINGS_SCREEN.name) {

@@ -64,6 +64,7 @@ import com.example.calorietracker.ui.theme.primaryLight
 import com.example.calorietracker.ui.theme.secondaryContainerDark
 import com.example.calorietracker.ui.theme.secondaryContainerLight
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
+import com.example.calorietracker.ui.viewmodel.IngredientApiViewModel
 import com.example.calorietracker.ui.viewmodel.IngredientItem
 import com.example.calorietracker.ui.viewmodel.toIngredient
 import com.example.calorietracker.ui.viewmodel.toIngredientItem
@@ -77,7 +78,8 @@ fun MealAddingScreen(
     onboardingViewModel: OnboardingViewModel,
     onAddButtonClicked: () -> Unit,
     meal: Meal?,
-    ingredient: List<Ingredient>?
+    ingredient: List<Ingredient>?,
+    ingredientApiViewModel: IngredientApiViewModel
 ) {
 
     // list for showing ingredients that the user adds
@@ -402,7 +404,8 @@ fun MealAddingScreen(
                 totalCarbs = (totalCarbs.toInt() + newIngredient.carbs.toInt()).toString()
                 totalFat = (totalFat.toInt() + newIngredient.fat.toInt()).toString()
             },
-            ingredient = ingredientToAdd
+            ingredient = ingredientToAdd,
+            ingredientApiViewModel = ingredientApiViewModel
         )
     }
 }

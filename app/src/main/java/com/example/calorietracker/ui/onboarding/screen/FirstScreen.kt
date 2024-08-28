@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -41,9 +41,8 @@ import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 // first screen for the onboarding process
 @Composable
 fun FirstScreen(
-    modifier: Modifier,
     onNextButtonClicked: () -> Unit = {},
-    onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    onboardingViewModel: OnboardingViewModel
 ) {
     // state variable for lottie animation composition
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.first_screen))
@@ -63,128 +62,132 @@ fun FirstScreen(
         mutableStateOf("Male")
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(
-                state = rememberScrollState()
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        LottieAnimation(
-            composition = composition,
-            modifier = Modifier.size(320.dp),
-            iterations = LottieConstants.IterateForever
-        )
-        Text(
-            text = stringResource(id = R.string.welcome),
-            fontSize = MaterialTheme.typography.displayLarge.fontSize,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
-            modifier = Modifier.padding(top = 32.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.welcome_text),
-            fontSize = MaterialTheme.typography.titleLarge.fontSize,
-            fontFamily = FontFamily(Font(R.font.dancingscript_regular)),
-            modifier = Modifier.padding(8.dp)
-        )
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // name text field
-            OutlinedTextField(
-                value = name,
-                onValueChange = {
-                    name = it
-                },
-                singleLine = true,
-                label = {
-                    Text(text = stringResource(id = R.string.name))
-                },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            // age text field
-            OutlinedTextField(
-                value = age,
-                onValueChange = { value ->
-                    age = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
-                        it.isDigit()
-                    }
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.age))
-                },
-                singleLine = true,
-                modifier = Modifier.padding(top = 16.dp),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Number
-                )
-            )
-
-            // Radio buttons for selecting gender
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            // Button for navigation in the onboarding screen
             Row(
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = stringResource(id = R.string.gender),
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = MaterialTheme.typography.titleMedium.fontSize
-                )
-                // male
-                Row {
-                    RadioButton(
-                        selected = selectedGender == "Male", onClick = { selectedGender = "Male" }
-                    )
-                    Text(
-                        text = stringResource(id = R.string.male),
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        fontSize = MaterialTheme.typography.titleMedium.fontSize
-                    )
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                // female
-                Row {
-                    RadioButton(
-                        selected = selectedGender == "Female",
-                        onClick = { selectedGender = "Female" }
-                    )
-                    Text(
-                        text = stringResource(id = R.string.female),
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        fontSize = MaterialTheme.typography.titleMedium.fontSize
-                    )
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    onClick = {
+                        onNextButtonClicked()
+                        onboardingViewModel.updateName(name)
+                        onboardingViewModel.updateAge(age.toInt())
+                        onboardingViewModel.updateGender(gender = selectedGender)
+                    },
+                    enabled = name.isNotBlank() && age.isNotBlank()
+                ) {
+                    Text(text = stringResource(id = R.string.next))
                 }
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Button for navigation in the onboarding screen
-        Row(
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
+                .padding(innerPadding)
+                .fillMaxSize()
+                .verticalScroll(
+                    state = rememberScrollState()
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                onClick = {
-                    onNextButtonClicked()
-                    onboardingViewModel.updateName(name)
-                    onboardingViewModel.updateAge(age.toInt())
-                    onboardingViewModel.updateGender(gender = selectedGender)
-                },
-                enabled = name.isNotBlank() && age.isNotBlank()
+            LottieAnimation(
+                composition = composition,
+                modifier = Modifier.size(320.dp),
+                iterations = LottieConstants.IterateForever
+            )
+            Text(
+                text = stringResource(id = R.string.welcome),
+                fontSize = MaterialTheme.typography.displayLarge.fontSize,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
+                modifier = Modifier.padding(top = 32.dp)
+            )
+            Text(
+                text = stringResource(id = R.string.welcome_text),
+                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                fontFamily = FontFamily(Font(R.font.dancingscript_regular)),
+                modifier = Modifier.padding(8.dp)
+            )
+
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                Text(text = stringResource(id = R.string.next))
+                // name text field
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = {
+                        name = it
+                    },
+                    singleLine = true,
+                    label = {
+                        Text(text = stringResource(id = R.string.name))
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                // age text field
+                OutlinedTextField(
+                    value = age,
+                    onValueChange = { value ->
+                        age = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                            it.isDigit()
+                        }
+                    },
+                    label = {
+                        Text(text = stringResource(id = R.string.age))
+                    },
+                    singleLine = true,
+                    modifier = Modifier.padding(top = 16.dp),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Number
+                    )
+                )
+
+                // Radio buttons for selecting gender
+                Row(
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.gender),
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = MaterialTheme.typography.titleMedium.fontSize
+                    )
+                    // male
+                    Row {
+                        RadioButton(
+                            selected = selectedGender == "Male", onClick = { selectedGender = "Male" }
+                        )
+                        Text(
+                            text = stringResource(id = R.string.male),
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            fontSize = MaterialTheme.typography.titleMedium.fontSize
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    // female
+                    Row {
+                        RadioButton(
+                            selected = selectedGender == "Female",
+                            onClick = { selectedGender = "Female" }
+                        )
+                        Text(
+                            text = stringResource(id = R.string.female),
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            fontSize = MaterialTheme.typography.titleMedium.fontSize
+                        )
+                    }
+                }
             }
         }
     }
+
 }

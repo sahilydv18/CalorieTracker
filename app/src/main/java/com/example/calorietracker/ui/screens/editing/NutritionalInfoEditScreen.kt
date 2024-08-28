@@ -132,7 +132,7 @@ fun NutritionalInfoEditScreen(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.calorie),
+                    text = stringResource(id = R.string.calorie_goal),
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     fontWeight = FontWeight.Bold
                 )
@@ -159,7 +159,7 @@ fun NutritionalInfoEditScreen(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.protein),
+                    text = stringResource(id = R.string.protein_goal),
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     fontWeight = FontWeight.Bold
                 )
@@ -186,7 +186,7 @@ fun NutritionalInfoEditScreen(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.carbs),
+                    text = stringResource(id = R.string.carbs_goal),
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     fontWeight = FontWeight.Bold
                 )
@@ -213,7 +213,7 @@ fun NutritionalInfoEditScreen(
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.fat),
+                    text = stringResource(id = R.string.fat_goal),
                     fontSize = MaterialTheme.typography.titleMedium.fontSize,
                     fontWeight = FontWeight.Bold
                 )

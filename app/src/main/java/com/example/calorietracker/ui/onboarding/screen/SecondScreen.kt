@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +38,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -48,10 +48,9 @@ import com.example.calorietracker.ui.onboarding.OnboardingViewModel
 // second screen for the onboarding process
 @Composable
 fun SecondScreen(
-    modifier: Modifier,
     onNextButtonClicked: () -> Unit = {},
     onPreviousButtonClicked: () -> Unit = {},
-    onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    onboardingViewModel: OnboardingViewModel
 ) {
 
     // state variable for lottie animation composition
@@ -95,169 +94,172 @@ fun SecondScreen(
         mutableStateOf(goalList[2])
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(
-                state = rememberScrollState()
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        LottieAnimation(
-            composition = composition,
-            modifier = Modifier.size(360.dp),
-            iterations = LottieConstants.IterateForever
-        )
-        Text(
-            text = stringResource(id = R.string.screen_two_text),
-            fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
-            fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            // buttons for navigating the onboarding screens
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedButton(onClick = { onPreviousButtonClicked() }) {
+                    Text(text = stringResource(id = R.string.previous))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    onClick = {
+                        onNextButtonClicked()
+                        onboardingViewModel.updateWeight(weight.toDouble())
+                        onboardingViewModel.updateHeight(height.toDouble())
+                        onboardingViewModel.updatePAL(getPAL(selectedLevel))
+                        onboardingViewModel.updateWeightGoal(selectedGoal)
+                    },
+                    enabled = weight.isNotBlank() && height.isNotBlank()
+                ) {
+                    Text(text = stringResource(id = R.string.next))
+                }
+            }
+        }
+    ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // weight text field
-            OutlinedTextField(
-                value = weight,
-                onValueChange = { value ->      // making sure that the user can only enter valid integer numbers or decimal numbers up to 2 places and not any whitespaces
-                    weight = value.filter {
-                        it.isDigit() || it == '.'
-                    }.replace(
-                        Regex("(\\.[0-9]{2}).*"), "$1"
-                    )
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.weight))
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Number
-                )
-            )
-
-            // height text field
-            OutlinedTextField(
-                value = height,
-                onValueChange = { value ->
-                    height = value.filter {     // making sure that the user can only enter valid integer numbers or decimal numbers up to 2 places and not any whitespaces
-                        it.isDigit() || it == '.'
-                    }.replace(
-                        Regex("(\\.[0-9]{2}).*"), "$1"
-                    )
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.height))
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Number
-                ),
-                modifier = Modifier.padding(top = 16.dp)
-            )
-        }
-
-        // dropdown menu for choosing exercise level
-        Box {
-            OutlinedTextField(
-                value = selectedLevel,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text(text = stringResource(id = R.string.exercise_level))
-                },
-                trailingIcon = {
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = stringResource(id = R.string.dropdown_reason)
-                        )
-                    }
-                },
-                modifier = Modifier.width(281.dp)
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                scrollState = rememberScrollState()
-            ) {
-                exerciseLevels.forEach {
-                    DropdownMenuItem(
-                        modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp),
-                        text = { Text(text = it) },
-                        onClick = {
-                            selectedLevel = it
-                            expanded = false
-                        })
-                }
-            }
-        }
-
-        // dropdown menu for selecting weight goal
-        Box(
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            OutlinedTextField(
-                value = selectedGoal,
-                onValueChange = {},
-                readOnly = true,
-                singleLine = true,
-                label = {
-                    Text(text = stringResource(id = R.string.goal))
-                },
-                trailingIcon = {
-                    IconButton(onClick = { goalExpanded = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = stringResource(id = R.string.dropdown_goal_reason)
-                        )
-                    }
-                }
-            )
-            DropdownMenu(
-                expanded = goalExpanded,
-                onDismissRequest = { goalExpanded = false },
-                scrollState = rememberScrollState()
-            ) {
-                goalList.forEach {
-                    DropdownMenuItem(
-                        text = { Text(text = it) },
-                        onClick = {
-                            selectedGoal = it
-                            goalExpanded = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // buttons for navigating the onboarding screens
-        Row(
             modifier = Modifier
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
+                .padding(innerPadding)
+                .fillMaxSize()
+                .verticalScroll(
+                    state = rememberScrollState()
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedButton(onClick = { onPreviousButtonClicked() }) {
-                Text(text = stringResource(id = R.string.previous))
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                onClick = {
-                    onNextButtonClicked()
-                    onboardingViewModel.updateWeight(weight.toDouble())
-                    onboardingViewModel.updateHeight(height.toDouble())
-                    onboardingViewModel.updatePAL(getPAL(selectedLevel))
-                    onboardingViewModel.updateWeightGoal(selectedGoal)
-                },
-                enabled = weight.isNotBlank() && height.isNotBlank()
+            LottieAnimation(
+                composition = composition,
+                modifier = Modifier.size(360.dp),
+                iterations = LottieConstants.IterateForever
+            )
+            Text(
+                text = stringResource(id = R.string.screen_two_text),
+                fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
+                fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                Text(text = stringResource(id = R.string.next))
+                // weight text field
+                OutlinedTextField(
+                    value = weight,
+                    onValueChange = { value ->      // making sure that the user can only enter valid integer numbers or decimal numbers up to 2 places and not any whitespaces
+                        weight = value.filter {
+                            it.isDigit() || it == '.'
+                        }.replace(
+                            Regex("(\\.[0-9]{2}).*"), "$1"
+                        )
+                    },
+                    label = {
+                        Text(text = stringResource(id = R.string.weight))
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Number
+                    )
+                )
+
+                // height text field
+                OutlinedTextField(
+                    value = height,
+                    onValueChange = { value ->
+                        height = value.filter {     // making sure that the user can only enter valid integer numbers or decimal numbers up to 2 places and not any whitespaces
+                            it.isDigit() || it == '.'
+                        }.replace(
+                            Regex("(\\.[0-9]{2}).*"), "$1"
+                        )
+                    },
+                    label = {
+                        Text(text = stringResource(id = R.string.height))
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Number
+                    ),
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+
+            // dropdown menu for choosing exercise level
+            Box {
+                OutlinedTextField(
+                    value = selectedLevel,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = {
+                        Text(text = stringResource(id = R.string.exercise_level))
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { expanded = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = stringResource(id = R.string.dropdown_reason)
+                            )
+                        }
+                    },
+                    modifier = Modifier.width(281.dp)
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    scrollState = rememberScrollState()
+                ) {
+                    exerciseLevels.forEach {
+                        DropdownMenuItem(
+                            modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp),
+                            text = { Text(text = it) },
+                            onClick = {
+                                selectedLevel = it
+                                expanded = false
+                            })
+                    }
+                }
+            }
+
+            // dropdown menu for selecting weight goal
+            Box(
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = selectedGoal,
+                    onValueChange = {},
+                    readOnly = true,
+                    singleLine = true,
+                    label = {
+                        Text(text = stringResource(id = R.string.goal))
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { goalExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = stringResource(id = R.string.dropdown_goal_reason)
+                            )
+                        }
+                    }
+                )
+                DropdownMenu(
+                    expanded = goalExpanded,
+                    onDismissRequest = { goalExpanded = false },
+                    scrollState = rememberScrollState()
+                ) {
+                    goalList.forEach {
+                        DropdownMenuItem(
+                            text = { Text(text = it) },
+                            onClick = {
+                                selectedGoal = it
+                                goalExpanded = false
+                            }
+                        )
+                    }
+                }
             }
         }
     }

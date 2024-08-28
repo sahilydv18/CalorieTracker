@@ -83,6 +83,10 @@
     <string name="connect_with_me">"Connect with me: "</string>
     <string name="about">About</string>
     <string name="get_nutritional_data">Get nutritional data</string>
+    <string name="calorie_goal">Calorie Goal (in kcal)</string>
+    <string name="protein_goal">Protein Goal (in g)</string>
+    <string name="carbs_goal">Carbs Goal (in g)</string>
+    <string name="fat_goal">Fat Goal (in g)</string>
     <string-array name="quantity_type_list">
         <item>No.</item>
         <item>g</item>

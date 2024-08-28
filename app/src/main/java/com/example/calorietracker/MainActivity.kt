@@ -1,11 +1,11 @@
 package com.example.calorietracker
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,9 +19,11 @@ import com.example.calorietracker.ui.onboarding.screen.OnboardingScreen
 import com.example.calorietracker.ui.screens.AppScreen
 import com.example.calorietracker.ui.theme.CalorieTrackerTheme
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
+import com.example.calorietracker.ui.viewmodel.IngredientApiViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,8 @@ class MainActivity : ComponentActivity() {
             val shouldShowOnboarding by onboardingViewModel.shouldShowOnboardingScreen.collectAsState()
 
             val databaseViewModel: DatabaseViewModel = hiltViewModel()
+
+            val ingredientApiViewModel: IngredientApiViewModel = hiltViewModel()
 
             val navController: NavHostController = rememberNavController()
 
@@ -53,19 +57,20 @@ class MainActivity : ComponentActivity() {
             CalorieTrackerTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
+                ) {
                     if (shouldShowOnboarding) {
                         OnboardingScreen(
-                            modifier = Modifier.padding(innerPadding),
                             navController = navController,
                             onboardingViewModel = onboardingViewModel,
-                            databaseViewModel = databaseViewModel
+                            databaseViewModel = databaseViewModel,
+                            ingredientApiViewModel = ingredientApiViewModel
                         )
                     } else {
                         AppScreen(
                             navController = navController,
                             databaseViewModel = databaseViewModel,
-                            onboardingViewModel = onboardingViewModel
+                            onboardingViewModel = onboardingViewModel,
+                            ingredientApiViewModel = ingredientApiViewModel
                         )
                     }
                 }

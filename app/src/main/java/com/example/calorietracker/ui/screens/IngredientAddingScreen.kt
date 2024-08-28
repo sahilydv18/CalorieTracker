@@ -46,7 +46,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.ui.viewmodel.IngredientApiUiState
@@ -62,7 +61,7 @@ fun IngredientAddingScreen(
     dismissDialog: () -> Unit,
     onIngredientAdded: (IngredientItem) -> Unit,
     ingredient: Ingredient,
-    ingredientApiViewModel: IngredientApiViewModel = hiltViewModel()
+    ingredientApiViewModel: IngredientApiViewModel
 ) {
     // state variable for ingredient name
     var ingredientName by rememberSaveable {
@@ -382,12 +381,12 @@ fun IngredientAddingScreen(
             IngredientApiUiState.Loading -> {}
             IngredientApiUiState.Error -> {
                 showLoadingDialog = false
-                Toast.makeText(context, "Unable to get data for $ingredientName! \n Please check you internet connection.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Couldn't connect to the server.\nPlease check your internet connection.", Toast.LENGTH_LONG).show()
             }
             is IngredientApiUiState.Success -> {
                 showLoadingDialog = false
                 if (ingredientNutritionalInfo.ingredientNutritionalData.items.isEmpty()) {
-                    Toast.makeText(context, "No ingredient found!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Invalid ingredient name.\nPlease try again.", Toast.LENGTH_LONG).show()
                     ingredientCarbs = ""
                     ingredientCalorie = ""
                     ingredientFat = ""

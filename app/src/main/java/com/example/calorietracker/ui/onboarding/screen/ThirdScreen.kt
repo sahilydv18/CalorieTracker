@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,10 +45,9 @@ import kotlinx.coroutines.launch
 // third screen for onboarding process
 @Composable
 fun ThirdScreen(
-    modifier: Modifier,
     onFinishButtonClicked: () -> Unit = {},
     onPreviousButtonClicked: () -> Unit = {},
-    onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    onboardingViewModel: OnboardingViewModel
 ) {
 
     // state variables for calculation of nutritional values
@@ -176,130 +176,133 @@ fun ThirdScreen(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(
-                state = rememberScrollState()
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier.size(360.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.third_screen_text),
-            fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
-            fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // calorie text field
-            OutlinedTextField(
-                value = calorie,
-                onValueChange = { value ->
-                    calorie = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
-                        it.isDigit()
-                    }
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.calorie))
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Number
-                )
-            )
-
-            // protein text field
-            OutlinedTextField(
-                value = protein,
-                onValueChange = { value ->
-                    protein = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
-                        it.isDigit()
-                    }
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.protein))
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Number
-                ),
-                modifier = Modifier.padding(top = 16.dp)
-            )
-
-            // carbs text field
-            OutlinedTextField(
-                value = carbs,
-                onValueChange = { value ->
-                    carbs = value.filter {      // making sure that the user enter only integer value and not a decimal value or any whitespaces
-                        it.isDigit()
-                    }
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.carbs))
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Number
-                ),
-                modifier = Modifier.padding(top = 16.dp)
-            )
-
-            // fat text field
-            OutlinedTextField(
-                value = fat,
-                onValueChange = { value ->
-                    fat = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
-                        it.isDigit()
-                    }
-                },
-                label = {
-                    Text(text = stringResource(id = R.string.fat))
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Number
-                ),
-                modifier = Modifier.padding(top = 16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        // buttons for navigating the onboarding screens
-        Row(
-            modifier = Modifier
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            OutlinedButton(onClick = { onPreviousButtonClicked() }) {
-                Text(text = stringResource(id = R.string.previous))
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                onClick = {
-                    onFinishButtonClicked()
-                    onboardingViewModel.updateShouldShowOnboardingScreen(false)
-                    onboardingViewModel.updateCalorie(calorie.toInt())
-                    onboardingViewModel.updateProtein(protein.toInt())
-                    onboardingViewModel.updateCarbs(carbs.toInt())
-                    onboardingViewModel.updateFat(fat.toInt())
-                },
-                enabled = calorie.isNotBlank() && protein.isNotBlank() && carbs.isNotBlank() && fat.isNotBlank()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            // buttons for navigating the onboarding screens
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = stringResource(id = R.string.finish))
+                OutlinedButton(onClick = { onPreviousButtonClicked() }) {
+                    Text(text = stringResource(id = R.string.previous))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    onClick = {
+                        onFinishButtonClicked()
+                        onboardingViewModel.updateShouldShowOnboardingScreen(false)
+                        onboardingViewModel.updateCalorie(calorie.toInt())
+                        onboardingViewModel.updateProtein(protein.toInt())
+                        onboardingViewModel.updateCarbs(carbs.toInt())
+                        onboardingViewModel.updateFat(fat.toInt())
+                    },
+                    enabled = calorie.isNotBlank() && protein.isNotBlank() && carbs.isNotBlank() && fat.isNotBlank()
+                ) {
+                    Text(text = stringResource(id = R.string.finish))
+                }
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .verticalScroll(
+                    state = rememberScrollState()
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(360.dp)
+            )
+            Text(
+                text = stringResource(id = R.string.third_screen_text),
+                fontFamily = FontFamily(Font(R.font.dancingscript_bold)),
+                fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                // calorie text field
+                OutlinedTextField(
+                    value = calorie,
+                    onValueChange = { value ->
+                        calorie = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                            it.isDigit()
+                        }
+                    },
+                    label = {
+                        Text(text = stringResource(id = R.string.calorie))
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Number
+                    )
+                )
+
+                // protein text field
+                OutlinedTextField(
+                    value = protein,
+                    onValueChange = { value ->
+                        protein = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                            it.isDigit()
+                        }
+                    },
+                    label = {
+                        Text(text = stringResource(id = R.string.protein))
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Number
+                    ),
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+
+                // carbs text field
+                OutlinedTextField(
+                    value = carbs,
+                    onValueChange = { value ->
+                        carbs = value.filter {      // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                            it.isDigit()
+                        }
+                    },
+                    label = {
+                        Text(text = stringResource(id = R.string.carbs))
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
+                        keyboardType = KeyboardType.Number
+                    ),
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+
+                // fat text field
+                OutlinedTextField(
+                    value = fat,
+                    onValueChange = { value ->
+                        fat = value.filter {        // making sure that the user enter only integer value and not a decimal value or any whitespaces
+                            it.isDigit()
+                        }
+                    },
+                    label = {
+                        Text(text = stringResource(id = R.string.fat))
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Number
+                    ),
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
         }
     }

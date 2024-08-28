@@ -16,12 +16,14 @@ import com.example.calorietracker.ui.screens.editing.BiometricInfoEditScreen
 import com.example.calorietracker.ui.screens.editing.NutritionalInfoEditScreen
 import com.example.calorietracker.ui.screens.editing.PersonalInfoEditScreen
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
+import com.example.calorietracker.ui.viewmodel.IngredientApiViewModel
 
 @Composable
 fun AppScreen(
     navController: NavHostController,
     databaseViewModel: DatabaseViewModel,
-    onboardingViewModel: OnboardingViewModel
+    onboardingViewModel: OnboardingViewModel,
+    ingredientApiViewModel: IngredientApiViewModel
 ) {
 
     var mealToEdit by remember {
@@ -74,7 +76,8 @@ fun AppScreen(
                 },
                 meal = mealToEdit,
                 onboardingViewModel = onboardingViewModel,
-                ingredient = ingredientsForMealToEdit
+                ingredient = ingredientsForMealToEdit,
+                ingredientApiViewModel = ingredientApiViewModel
             )
         }
         composable(Screens.SETTINGS_SCREEN.name) {
