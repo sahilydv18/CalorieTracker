@@ -101,7 +101,7 @@ object AppModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(IngredientApi :: class.java)
+            .create(IngredientApi::class.java)
     }
 
     // function for providing ingredientApiRepo

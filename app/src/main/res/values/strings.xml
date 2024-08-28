@@ -82,6 +82,7 @@
     <string name="made_by_text">Made with ❤️ by Sahil</string>
     <string name="connect_with_me">"Connect with me: "</string>
     <string name="about">About</string>
+    <string name="get_nutritional_data">Get nutritional data</string>
     <string-array name="quantity_type_list">
         <item>No.</item>
         <item>g</item>

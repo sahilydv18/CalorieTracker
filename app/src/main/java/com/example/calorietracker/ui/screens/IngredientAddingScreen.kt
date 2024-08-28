@@ -7,14 +7,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -37,15 +42,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
+import com.example.calorietracker.ui.viewmodel.IngredientApiUiState
+import com.example.calorietracker.ui.viewmodel.IngredientApiViewModel
 import com.example.calorietracker.ui.viewmodel.IngredientItem
 
 @Composable
 fun IngredientAddingScreen(
     dismissDialog: () -> Unit,
     onIngredientAdded: (IngredientItem) -> Unit,
-    ingredient: Ingredient
+    ingredient: Ingredient,
+    ingredientApiViewModel: IngredientApiViewModel = hiltViewModel()
 ) {
     // state variable for ingredient name
     var ingredientName by rememberSaveable {
@@ -91,6 +100,14 @@ fun IngredientAddingScreen(
 
     // state variable for showing dropdown menu
     var expanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    // ingredient nutritional info ui state
+    val ingredientNutritionalInfo: IngredientApiUiState = ingredientApiViewModel.ingredientApiUiState
+
+    // state variable for showing loading alert dialog while fetching ingredient nutritional data
+    var showLoadingDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -143,9 +160,9 @@ fun IngredientAddingScreen(
             }
         },
         text = {
-            Column {
-                Text(text = stringResource(id = R.string.ingredient_info))
-                Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
                 // text field for ingredient name
                 OutlinedTextField(
                     value = ingredientName,
@@ -231,6 +248,31 @@ fun IngredientAddingScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // button for fetching nutritional info for the ingredient
+                Button(
+                    onClick = {
+                        when(ingredientNutritionalInfo) {
+                            IngredientApiUiState.Loading -> {
+                                showLoadingDialog = true
+                            }
+                            IngredientApiUiState.Error -> {
+                                showLoadingDialog = false
+                            }
+                            is IngredientApiUiState.Success -> {
+                                showLoadingDialog = false
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+                    enabled = ingredientName.isNotBlank() && ingredientQuantity.isNotBlank()
+                ) {
+                    Text(text = stringResource(id = R.string.get_nutritional_data))
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
                 // text field for ingredient calorie
                 OutlinedTextField(
                     value = ingredientCalorie,
@@ -308,6 +350,20 @@ fun IngredientAddingScreen(
             }
         }
     )
+
+    if (showLoadingDialog) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+    }
 }
 
 // function to remove unit from the quantity so that we can display the accurate quantity while editing the ingredient
