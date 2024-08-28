@@ -1,5 +1,6 @@
 package com.example.calorietracker.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +25,12 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,12 +45,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calorietracker.R
 import com.example.calorietracker.database.Ingredient
 import com.example.calorietracker.ui.viewmodel.IngredientApiUiState
 import com.example.calorietracker.ui.viewmodel.IngredientApiViewModel
 import com.example.calorietracker.ui.viewmodel.IngredientItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Composable
 fun IngredientAddingScreen(
@@ -110,6 +118,8 @@ fun IngredientAddingScreen(
     var showLoadingDialog by rememberSaveable {
         mutableStateOf(false)
     }
+
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = {},
@@ -200,7 +210,7 @@ fun IngredientAddingScreen(
                         },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
+                            imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Number
                         ),
                         modifier = Modifier.width(140.dp)
@@ -252,17 +262,32 @@ fun IngredientAddingScreen(
                 // button for fetching nutritional info for the ingredient
                 Button(
                     onClick = {
-                        when(ingredientNutritionalInfo) {
-                            IngredientApiUiState.Loading -> {
-                                showLoadingDialog = true
+                        showLoadingDialog = true
+                        val ingredientQuantityToPass: String = when(selectedQuantityType) {
+                            quantityType[0] -> {
+                                ingredientQuantity
                             }
-                            IngredientApiUiState.Error -> {
-                                showLoadingDialog = false
+                            quantityType[1] -> {
+                                "$ingredientQuantity${quantityType[1]}"
                             }
-                            is IngredientApiUiState.Success -> {
-                                showLoadingDialog = false
+                            quantityType[2] -> {
+                                "$ingredientQuantity${quantityType[1]}"
+                            }
+                            quantityType[3] -> {
+                                "$ingredientQuantity${quantityType[3]}"
+                            }
+                            quantityType[4] -> {
+                                "$ingredientQuantity${quantityType[4]}"
+                            }
+                            quantityType[5] -> {
+                                val litreToML = (ingredientQuantity.toInt() * 1000).toString()
+                                "$litreToML${quantityType[1]}"
+                            }
+                            else -> {
+                                "$ingredientQuantity${quantityType[6]}"
                             }
                         }
+                        ingredientApiViewModel.getIngredientNutritionalInfo(ingredientName, ingredientQuantityToPass)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -351,20 +376,50 @@ fun IngredientAddingScreen(
         }
     )
 
+    // using launched effect to maintain changes in UI according to the API response
+    LaunchedEffect(ingredientNutritionalInfo) {
+        when (ingredientNutritionalInfo) {
+            IngredientApiUiState.Loading -> {}
+            IngredientApiUiState.Error -> {
+                showLoadingDialog = false
+                Toast.makeText(context, "Unable to get data for $ingredientName! \n Please check you internet connection.", Toast.LENGTH_LONG).show()
+            }
+            is IngredientApiUiState.Success -> {
+                showLoadingDialog = false
+                if (ingredientNutritionalInfo.ingredientNutritionalData.items.isEmpty()) {
+                    Toast.makeText(context, "No ingredient found!", Toast.LENGTH_LONG).show()
+                    ingredientCarbs = ""
+                    ingredientCalorie = ""
+                    ingredientFat = ""
+                    ingredientProtein = ""
+                } else {
+                    ingredientCalorie = ingredientNutritionalInfo.ingredientNutritionalData.items[0].calories.roundToInt().toString()
+                    ingredientProtein = ingredientNutritionalInfo.ingredientNutritionalData.items[0].proteinG.roundToInt().toString()
+                    ingredientCarbs = ingredientNutritionalInfo.ingredientNutritionalData.items[0].carbohydratesTotalG.roundToInt().toString()
+                    ingredientFat = ingredientNutritionalInfo.ingredientNutritionalData.items[0].fatTotalG.roundToInt().toString()
+                }
+            }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            ingredientApiViewModel.ingredientApiUiState = IngredientApiUiState.Loading
+        }
+    }
+
     if (showLoadingDialog) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+        Dialog(onDismissRequest = {}) {
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }
 }
+
 
 // function to remove unit from the quantity so that we can display the accurate quantity while editing the ingredient
 private fun getQuantity(quantityWithUnit: String): String {

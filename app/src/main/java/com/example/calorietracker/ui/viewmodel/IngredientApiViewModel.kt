@@ -19,7 +19,6 @@ class IngredientApiViewModel @Inject constructor(
 ): ViewModel() {
     // ui state for showing information on screen
     var ingredientApiUiState: IngredientApiUiState by mutableStateOf(IngredientApiUiState.Loading)
-        private set
 
     fun getIngredientNutritionalInfo(ingredientName: String, ingredientQuantity: String) {
         val query = "$ingredientQuantity $ingredientName"
