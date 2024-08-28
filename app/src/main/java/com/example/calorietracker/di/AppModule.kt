@@ -7,19 +7,29 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import androidx.work.WorkerFactory
+import com.example.calorietracker.BuildConfig
 import com.example.calorietracker.database.AppDatabase
 import com.example.calorietracker.database.MealDao
 import com.example.calorietracker.database.repo.MealRepo
 import com.example.calorietracker.database.repo.MealRepoImpl
 import com.example.calorietracker.datastore.repo.PreferencesRepo
 import com.example.calorietracker.datastore.repo.PreferencesRepoImpl
+import com.example.calorietracker.remote.IngredientApi
+import com.example.calorietracker.remote.IngredientInterceptor
+import com.example.calorietracker.remote.repo.IngredientApiRepo
+import com.example.calorietracker.remote.repo.IngredientApiRepoImpl
 import com.example.calorietracker.workmanager.ResetProgressWorkerFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+
+private const val BASE_URL = "https://api.calorieninjas.com/"
 
 // using dagger hilt to provide dependency injection
 @Module
@@ -75,5 +85,29 @@ object AppModule {
         preferencesRepo: PreferencesRepo
     ): WorkerFactory {
         return ResetProgressWorkerFactory(mealDao,preferencesRepo)
+    }
+
+    // function for providing IngredientApi
+    @Provides
+    @Singleton
+    fun providesIngredientApi(): IngredientApi {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(IngredientInterceptor(BuildConfig.API_KEY))
+            .build()
+
+        return Retrofit
+            .Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(IngredientApi :: class.java)
+    }
+
+    // function for providing ingredientApiRepo
+    @Provides
+    @Singleton
+    fun providesIngredientRepo(ingredientApi: IngredientApi): IngredientApiRepo{
+        return IngredientApiRepoImpl(ingredientApi)
     }
 }

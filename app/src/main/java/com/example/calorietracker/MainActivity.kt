@@ -19,6 +19,7 @@ import com.example.calorietracker.ui.onboarding.screen.OnboardingScreen
 import com.example.calorietracker.ui.screens.AppScreen
 import com.example.calorietracker.ui.theme.CalorieTrackerTheme
 import com.example.calorietracker.ui.viewmodel.DatabaseViewModel
+import com.example.calorietracker.ui.viewmodel.IngredientApiViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,6 +36,8 @@ class MainActivity : ComponentActivity() {
             val shouldShowOnboarding by onboardingViewModel.shouldShowOnboardingScreen.collectAsState()
 
             val databaseViewModel: DatabaseViewModel = hiltViewModel()
+
+            val ingredientApiViewModel: IngredientApiViewModel = hiltViewModel()
 
             val navController: NavHostController = rememberNavController()
 
